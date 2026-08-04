@@ -437,6 +437,7 @@ namespace TownOfHost
         Evaporation,
         Retaliation,
         RuleViolation,
+        Martyrdom,
         etc = -1
     }
     //WinData

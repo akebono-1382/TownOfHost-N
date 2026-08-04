@@ -52,7 +52,7 @@ public sealed class Warlock : RoleBase, IImpostor, IUsePhantomButton
     }
     static void SetUpOptionItem()
     {
-        OptionPhantomCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.WarlcokPhantomCooldown, new(0f, 60f, 0.5f), 30f, false)
+        OptionPhantomCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.WarlcokPhantomCooldown, new(0f, 60f, 0.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
 
@@ -61,7 +61,7 @@ public sealed class Warlock : RoleBase, IImpostor, IUsePhantomButton
         CursedPlayer = null;
         IsCursed = false;
     }
-   public override string GetAbilityButtonText() => GetString("WarlockCurseButtonText");
+    public override string GetAbilityButtonText() => GetString("WarlockCurseButtonText");
 
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -73,9 +73,9 @@ public sealed class Warlock : RoleBase, IImpostor, IUsePhantomButton
 
         if (!IsCursed)
         {
-            ResetCooldown = false;
             PlayerControl nearest = null;
             AdjustKillCooldown = false;
+            ResetCooldown = true;
 
             float minDist = Main.NormalOptions.KillDistance switch
             {
@@ -102,7 +102,6 @@ public sealed class Warlock : RoleBase, IImpostor, IUsePhantomButton
                 IsCursed = true;
                 CursedPlayer = nearest;
                 Logger.Info($"{CursedPlayer}が呪われた", "Warlock");
-
             }
             else
             {
@@ -132,6 +131,7 @@ public sealed class Warlock : RoleBase, IImpostor, IUsePhantomButton
 
             if (killTarget != null)
             {
+                // 重要修正:
                 // - AttemptKiller を"ウォーロック本人 (Player)"にしてキル権限を持たせる
                 // - AppearanceKiller を "呪われたプレイヤー (CursedPlayer)" にして見た目は呪い側で表示させる
                 if (CustomRoleManager.OnCheckMurder(Player, killTarget, CursedPlayer, killTarget, true, false, 2))
@@ -142,6 +142,7 @@ public sealed class Warlock : RoleBase, IImpostor, IUsePhantomButton
                 {
                     Logger.Info($"OnCheckMurder が false を返しました: attempt={Player?.GetNameWithRole()} appearance={CursedPlayer?.GetNameWithRole()} target={killTarget?.GetNameWithRole()}", "Warlock");
                 }
+
                 Player.SetKillCooldown();
                 // 状態リセット
                 CursedPlayer = null;
