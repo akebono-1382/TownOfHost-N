@@ -430,6 +430,11 @@
 "PolarisReducedperkill","Brightness loss per kill","キルごとに減少する輝き"
 "PolarisBombCooldown","Bomb Cooldown","超新星爆発のクールタイム"
 "PolarisExplosionRadius","Explosion Radius","爆発範囲"
+"PolarisInfo","a","その輝きを最期まで"
+"PolarisInfoLong","a","「輝き」という数値があり時間経過・キルで減少します。0になると死んでしまいます。\nまた、輝きが1以下になりクールダウンが明けると強制的に自爆します。クールダウンはファントムボタンで表示されます。\n"
+"PolarisCanUseTomosibi","Can we rewind Kirkool and restore its brilliance","キルクールを巻き戻して輝きを回復できるか"
+"PolarisRewindKillCool","Rewind Kill Cooldown","巻き戻るキルクール"
+"PolarisRestoredRadiance","Restored Radiance","回復する輝き"
 
 "WarlockInfoLong","Pressing the Phantom button will cast a curse on the kill target. \nThe next time you press the Phantom button, the cursed person will kill the person closest to them.","ファントムボタンを押すことでキルターゲットに呪いをかけることができます。\n次にファントムボタンを押すと呪った人が一番近くの人をキルします。"
 "## 役職説明ショート"

@@ -1,11 +1,14 @@
 using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
+using TownOfHost.Modules;
+using TownOfHost.Patches;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using TownOfHost.Roles.Neutral;
 using UnityEngine;
-using TownOfHost.Modules;
+using static Il2CppSystem.Threading.SemaphoreSlim;
+using static UnityEngine.ProBuilder.AutoUnwrapSettings;
 
 namespace TownOfHost.Roles.Impostor
 {
@@ -22,7 +25,8 @@ namespace TownOfHost.Roles.Impostor
                 SetUpOptionItem,
                 "Pol",
                 "#ff1919",
-                OptionSort: (7, 0)
+                OptionSort: (7, 0),
+                introSound: () => GetIntroSound(RoleTypes.Shapeshifter)
             );
         public Polaris(PlayerControl player)
         : base(
@@ -37,10 +41,11 @@ namespace TownOfHost.Roles.Impostor
 
             DecreasingTimer = null;
 
-            // 初期値
             phantomCooldownTimer = 0f;
             prevPhantomCooldownTimer = 0f;
             bombTriggered = false;
+            Burnouted = false;
+            //tomosibishine = OptionTomosibishine.GetInt();
         }
 
         private static OptionItem OptionKillCooldown;
@@ -54,7 +59,11 @@ namespace TownOfHost.Roles.Impostor
         public int Reducedperkill;
         public static OptionItem OptionBombCooldown;
         public static OptionItem OptionExplosionRadius;
-
+        //public static OptionItem OptionCanUseTomosibi;
+        //public static OptionItem OptionTomosibiKillcool;
+        //public static OptionItem OptionTomosibishine;
+        //public int tomosibishine;
+        public bool Burnouted;
 
         enum OptionName
         {
@@ -63,6 +72,9 @@ namespace TownOfHost.Roles.Impostor
             PolarisReducedperkill,
             PolarisBombCooldown,
             PolarisExplosionRadius,
+           // PolarisCanUseTomosibi,
+           // PolarisRewindKillCool,
+           // PolarisRestoredRadiance,
         }
 
 
@@ -110,40 +122,57 @@ namespace TownOfHost.Roles.Impostor
         /// </summary>
         private void ExecuteExplosion()
         {
-            //string modFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            //string soundPath = Path.Combine(Directory.GetCurrentDirectory(), "PolarisBomb.wav");
-            // 一度だけ実行する
-            bombTriggered = true;
+            // 再入防止。既に実行済み/実行中なら何もしない。
+            if (bombTriggered) return;
+            bombTriggered = true; // 最初に立てる（競合で二重実行されるのを防ぐ）
+            // 追加の安全処置：ファントムタイマーを無効化して OnFixedUpdate 側の再発を防ぐ
+            phantomCooldownTimer = float.MaxValue;
+            prevPhantomCooldownTimer = float.MaxValue;
 
-            var explosionRadius = OptionExplosionRadius.GetFloat();
-            var targets = PlayerCatch.AllAlivePlayerControls.ToArray();
-
-            foreach (var target in targets)
+            try
             {
-                if (target.PlayerId == Player.PlayerId) continue;
-                if (!Ballooner.IsInExplosionRange(Player, target, explosionRadius)) continue;
+                var explosionRadius = OptionExplosionRadius.GetFloat();
+                var targets = PlayerCatch.AllAlivePlayerControls.ToArray();
 
-                // ホスト側で対象プレイヤーに対して殺害判定を行う
-                CustomRoleManager.OnCheckMurder(Player, target, target, target, true, false, 2, CustomDeathReason.Bombed);
+                // 対象へダメージ（ホスト側でのみ呼ばれている前提）
+                foreach (var target in targets)
+                {
+                    if (target.PlayerId == Player.PlayerId) continue;
+                    if (!Ballooner.IsInExplosionRange(Player, target, explosionRadius)) continue;
+
+                    // ホスト側で対象プレイヤーに対して殺害判定を行う
+                    CustomRoleManager.OnCheckMurder(Player, target, target, target, true, false, 2, CustomDeathReason.Bombed);
+                }
+
+                // 所有者が生存しているなら自殺（ホストで実行）
+                if (Player.IsAlive())
+                {
+                    // Burnouted を先に立てる（再入抑止）
+                    if (!Burnouted)
+                    {
+                        Burnouted = true;
+                        MyState.DeathReason = CustomDeathReason.Burnout;
+                        Player.SetRealKiller(Player);
+                        // 一度だけ RPC を投げる
+                        Player.RpcMurderPlayer(Player);
+                    }
+                }
+
+                // 勝利判定（全滅など）
+                if (!PlayerCatch.AllAlivePlayerControls.Any())
+                {
+                    CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Impostor, byte.MaxValue);
+                }
+
+                // 状態同期と表示更新（1回だけ）
+                SendRPC();
+                UtilsNotifyRoles.NotifyRoles();
             }
-
-            // 所有者が生存しているなら自殺（ホストで実行）
-            if (Player.IsAlive())
+            catch (System.Exception ex)
             {
-                MyState.DeathReason = CustomDeathReason.Burnout;
-                Player.SetRealKiller(Player);
-                Player.RpcMurderPlayer(Player);
+                // 例外が出ても再入不可のままにしておく（安全優先）。
+                Logger.Error($"ExecuteExplosion 例外: {ex}", "Polaris.ExecuteExplosion");
             }
-
-            // 勝利判定（全滅など）
-            if (!PlayerCatch.AllAlivePlayerControls.Any())
-            {
-                CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Impostor, byte.MaxValue);
-            }
-
-            // 状態同期と表示更新
-            SendRPC();
-            UtilsNotifyRoles.NotifyRoles();
         }
 
         private static void SetUpOptionItem()
@@ -156,15 +185,28 @@ namespace TownOfHost.Roles.Impostor
             OptionReducedperkill = IntegerOptionItem.Create(RoleInfo, 14, OptionName.PolarisReducedperkill, new(0, 98, 1), 1, false);
             OptionBombCooldown = FloatOptionItem.Create(RoleInfo, 15, OptionName.PolarisBombCooldown, new(2.5f, 60f, 2.5f), 30f, false)
                 .SetValueFormat(OptionFormat.Seconds);
-            OptionExplosionRadius = FloatOptionItem.Create(RoleInfo, 1, OptionName.PolarisExplosionRadius, new(0.5f, 10f, 0.5f), 3f, false)
+            OptionExplosionRadius = FloatOptionItem.Create(RoleInfo, 16, OptionName.PolarisExplosionRadius, new(0.5f, 10f, 0.5f), 3f, false)
                 .SetValueFormat(OptionFormat.Multiplier);
-
+            /*OptionCanUseTomosibi = BooleanOptionItem.Create(RoleInfo, 17, OptionName.PolarisCanUseTomosibi, true, false);
+            OptionTomosibiKillcool = FloatOptionItem.Create(RoleInfo, 18, OptionName.PolarisRewindKillCool, new(1f, 60f, 0.5f), 5f, false, OptionCanUseTomosibi)
+                .SetValueFormat(OptionFormat.Seconds);
+            OptionTomosibishine = IntegerOptionItem.Create(RoleInfo, 19, OptionName.PolarisRestoredRadiance, new(1, 99, 1), 1, false, OptionCanUseTomosibi);*/
         }
 
         public override void Add()
         {
             base.Add();
+            //PetActionManager.Register(Player.PlayerId, OnPetUsed);
         }
+        /*public override void OnDestroy()
+        {
+            PetActionManager.Unregister(Player.PlayerId);
+        }
+        private void OnPetUsed()
+        {
+            Tomosibi();
+            SendRPC();
+        }*/
 
         public override void OnSpawn(bool initialState = false)
         {
@@ -184,7 +226,10 @@ namespace TownOfHost.Roles.Impostor
 
         public override void OnFixedUpdate(PlayerControl player)
         {
-
+            if (Player.IsAlive())
+            {
+                Burnouted = false;
+            }
             if (AmongUsClient.Instance.AmHost && !ExileController.Instance)
             {
                 SendRPC();
@@ -226,11 +271,104 @@ namespace TownOfHost.Roles.Impostor
             }
             if (shine <= 0)
             {
-                MyState.DeathReason = CustomDeathReason.Burnout;
-                Player.SetRealKiller(Player);
-                Player.RpcMurderPlayer(Player);
+                if (!Burnouted)
+                {
+                    Burnouted = true;
+                    MyState.DeathReason = CustomDeathReason.Burnout;
+                    Player.SetRealKiller(Player);
+                    Player.RpcMurderPlayer(Player);
+                }
             }
         }
+       /* private void Tomosibi()
+        {
+            // 生存チェック
+            if (!Player.IsAlive()) return;
+
+            // オプションから巻き戻し秒数と回復shineを取得
+            float rewindSeconds = OptionTomosibiKillcool?.GetFloat() ?? 0f;
+            int restoreShine = tomosibishine;
+
+            if (rewindSeconds <= 0f && restoreShine <= 0) return;
+
+            // 辞書登録（未登録なら Init）
+            (this as IUsePhantomButton)?.Init(Player);
+            IUsePhantomButton.IPPlayerKillCooldown.TryGetValue(Player.PlayerId, out var elapsed);
+
+            // 現在の total（最初の値を固定して使う）
+            float originalTotal = Main.AllPlayerKillCooldown.TryGetValue(Player.PlayerId, out var tot) ? tot : KillCooldown;
+            // 現在の残り（表示上）
+            float currentRemaining = Mathf.Max(0f, originalTotal - elapsed);
+
+            // 新しい残り時間 = 現在の残り + 巻き戻し秒数（期待どおり1回ごとに +rewind）
+            float newRemaining = currentRemaining + rewindSeconds;
+
+            // 新しい経過（elapsed を減らすことで残りが増える）
+            float newElapsed = Mathf.Max(0f, elapsed - rewindSeconds);
+
+            // newTotal は originalTotal を基準に固定計算（再適用しても変わらない）
+            float newTotal = originalTotal + rewindSeconds;
+
+            // 表示用経過を更新（クライアント表示に使われる）
+            IUsePhantomButton.IPPlayerKillCooldown[Player.PlayerId] = newElapsed;
+
+            // ホストなら権威ある total を上書き（ただし必ず originalTotal を基準に newTotal を設定）
+            if (AmongUsClient.Instance.AmHost)
+            {
+                Main.AllPlayerKillCooldown[Player.PlayerId] = newTotal;
+
+                // 同期と上書き対策（複数回送る）
+                try
+                {
+                    Player.MarkDirtySettings();
+                    Player.SyncSettings();
+                }
+                catch { }
+
+                _ = new LateTask(() =>
+                {
+                    if (!Player.IsAlive()) return;
+                    Main.AllPlayerKillCooldown[Player.PlayerId] = newTotal;
+                    try { Player.MarkDirtySettings(); Player.SyncSettings(); } catch { }
+                }, 0.12f, "Polaris.Tomosibi.Sync1", true);
+
+                _ = new LateTask(() =>
+                {
+                    if (!Player.IsAlive()) return;
+                    Main.AllPlayerKillCooldown[Player.PlayerId] = newTotal;
+                    try { Player.MarkDirtySettings(); Player.SyncSettings(); } catch { }
+                }, 0.45f, "Polaris.Tomosibi.Sync2", true);
+            }
+
+            // HUD 表示を即時更新（自分のクライアント）
+            float displayRemaining = Mathf.Max(0.005f, newRemaining);
+            if (PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.PlayerId == Player.PlayerId)
+            {
+                try { Player.SetKillTimer(displayRemaining); } catch { }
+            }
+
+            // 追加の保険として経過値を短時間再適用（表示安定化）
+            _ = new LateTask(() =>
+            {
+                if (!Player.IsAlive()) return;
+                IUsePhantomButton.IPPlayerKillCooldown[Player.PlayerId] = newElapsed;
+                if (PlayerControl.LocalPlayer != null && PlayerControl.LocalPlayer.PlayerId == Player.PlayerId)
+                {
+                    try { Player.SetKillTimer(Mathf.Max(0.005f, Main.AllPlayerKillCooldown.TryGetValue(Player.PlayerId, out var t2) ? (t2 - newElapsed) : displayRemaining)); } catch { }
+                }
+            }, 0.25f, "Polaris.Tomosibi.Reapply", true);
+
+            // shine の回復（固定回復）
+            if (restoreShine > 0)
+            {
+                shine += restoreShine;
+            }
+
+            // 同期と表示更新
+            SendRPC();
+            try { Player.MarkDirtySettings(); } catch { }
+            UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: Player);
+        }*/
 
         private void SendRPC()
         {
@@ -280,6 +418,10 @@ namespace TownOfHost.Roles.Impostor
             phantomCooldownTimer = 0f;
             prevPhantomCooldownTimer = 0f;
             bombTriggered = false;
+            if (Player.IsAlive())
+            {
+                Burnouted = false;
+            }
         }
     }
 }
