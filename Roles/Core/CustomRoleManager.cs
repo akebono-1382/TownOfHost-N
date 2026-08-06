@@ -882,7 +882,7 @@ public enum CustomRoles
     Archer,
     Assassin,
     UnFortuner,
-    //TOH-N
+    //TOH-Pko
     EvilGuesser,
     TimeSleeper,
     EvilBlender,
@@ -895,6 +895,7 @@ public enum CustomRoles
     BeginnerImpostor,
     //TOH-N
     Survivor,
+    Polaris,
     //DEBUG only Impostor
     //Madmate
     MadGuardian,

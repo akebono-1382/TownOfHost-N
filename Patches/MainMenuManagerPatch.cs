@@ -60,7 +60,7 @@ namespace TownOfHost
             {
                 discordButton = CreateButton(
                     "DiscordButton",
-                    new(-2.5f, -1f, 1f),
+                    new(-1.7f, -1f, 1f),
                     new(88, 101, 242, byte.MaxValue),
                     new(148, 161, byte.MaxValue, byte.MaxValue),
                     () => Application.OpenURL(Main.DiscordInviteUrl),
@@ -73,7 +73,7 @@ namespace TownOfHost
             {
                 gitHubButton = CreateButton(
                     "GitHubButton",
-                    new(-0.8f, -1f, 1f),//-1f
+                    new(0f, -1f, 1f),//-1f
                     new(153, 153, 153, byte.MaxValue),
                     new(209, 209, 209, byte.MaxValue),
                     () => Application.OpenURL("https://github.com/akebono-1382/TownOfHost-N"),
@@ -85,10 +85,10 @@ namespace TownOfHost
             {
                 TwitterXButton = CreateButton(
                     "TwitterXButton",
-                    new(0.9f, -1f, 1f),
+                    new(1.7f, -1f, 1f),
                     new(0, 202, 255, byte.MaxValue),
                     new(60, 255, 255, byte.MaxValue),
-                    () => Application.OpenURL("https://youtube.com/@TOH-N?si=P6vdE1t4MHoA_C6F"),
+                    () => Application.OpenURL("https://www.youtube.com/channel/UCw2bDCc7XF4te7qK0L-Holg"),
                     "Youtube");
             }
             // TOHNBOTボタンを生成

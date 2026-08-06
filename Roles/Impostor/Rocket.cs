@@ -22,8 +22,7 @@ public sealed class Rocket : RoleBase, IImpostor, IUsePhantomButton
             26350,
             SetupOptionItem,
             "rkt",
-            OptionSort: (3, 14),
-            from: From.SuperNewRoles
+            OptionSort: (3, 14)
         );
 
     public Rocket(PlayerControl player) : base(RoleInfo, player)

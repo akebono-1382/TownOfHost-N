@@ -1,4 +1,3 @@
-//コードがスパゲッティになりかけてるので一回アルケミストくんは出禁。
 /*
 using System.Collections.Generic;
 using System.Linq;

@@ -438,6 +438,7 @@ namespace TownOfHost
         Retaliation,
         RuleViolation,
         Martyrdom,
+        Burnout,
         etc = -1
     }
     //WinData
