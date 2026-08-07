@@ -47,19 +47,19 @@ public class ModNewsHistory
                 };
                 AllModNews.Add(news);
             }*/
-            {
+            /*{
                 var news = new ModNews
                 {
                     Number = 100099,
                     Title = "初リリース!",
                     SubTitle = "<color=#6a5acd>●TOH-N v1.1.0</color>",
                     ShortTitle = "<color=#6a5acd>●TOH-N v1.1.0</color>",
-                    Text = "あいうえを\r\nかきくけこ\r\n"
+                    Text = "\r\n"
                     ,
                     Date = "2026-8-5"
                 };
                 AllModNews.Add(news);
-            }
+            }*/
             AnnouncementPopUp.UpdateState = AnnouncementPopUp.AnnounceState.NotStarted;
         }
     }

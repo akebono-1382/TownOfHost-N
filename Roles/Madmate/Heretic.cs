@@ -108,24 +108,23 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, OptionBaseCoolTime, 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanVent, false, false);
-        OptionSuicideMotion = StringOptionItem.Create(RoleInfo, 13, OptionName.SillySheriffSuicideMotion, EnumHelper.GetAllNames<SuicideMotionOption>(), 0, false);
-        OptionMode = StringOptionItem.Create(RoleInfo, 14, OptionName.Mode, EnumHelper.GetAllNames<ModeOption>(), 0, false);
+        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, false, false);
+        OptionMode = StringOptionItem.Create(RoleInfo, 12, OptionName.Mode, EnumHelper.GetAllNames<ModeOption>(), 0, false);
         optionImpostorsGetRevenged =
-        BooleanOptionItem.Create(RoleInfo, 15,
+        BooleanOptionItem.Create(RoleInfo, 13,
         OptionName.BlackCatImpostorsGetRevenged,
         false, false);
 
         optionMadmatesGetRevenged =
-            BooleanOptionItem.Create(RoleInfo, 16,
+            BooleanOptionItem.Create(RoleInfo, 14,
                 OptionName.BlackCatMadmatesGetRevenged,
                 false, false);
 
         optionNeutralsGetRevenged =
-            BooleanOptionItem.Create(RoleInfo, 17,
+            BooleanOptionItem.Create(RoleInfo, 15,
                 OptionName.BlackCatNeutralsGetRevenged,
                 false, false);
-        RoleAddAddons.Create(RoleInfo, 20, MadMate: true);
+        RoleAddAddons.Create(RoleInfo, 16, MadMate: true);
     }
 
     public bool CanUseKillButton() => Player.IsAlive();
