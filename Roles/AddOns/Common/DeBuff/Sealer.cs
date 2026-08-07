@@ -59,7 +59,7 @@ namespace TownOfHost.Roles.AddOns.Common
 
         public static void SetupCustomOption()
         {
-            var assignOption = SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Sealer, fromtext: UtilsOption.GetFrom(From.TownOfHost_Pko));
+            var assignOption = SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Sealer, fromtext: UtilsOption.GetFrom(From.TownOfHost_N));
             AddOnsAssignData.Create(Id + 10, CustomRoles.Sealer, false, false, false, false);
             ObjectOptionitem.Create(Id + 49, "AddonOption", true, "", TabGroup.Addons)
                 .SetOptionName(() => "Role Option").SetSubRoleOptionItem(CustomRoles.Sealer);

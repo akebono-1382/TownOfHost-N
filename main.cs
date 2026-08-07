@@ -38,8 +38,8 @@ namespace TownOfHost
         public static readonly string ForkId = "TOH-N";
         // Discordボタンを表示するか / Show Discord Button (Default: true)
         public static readonly bool ShowDiscordButton = true;
-        // Discordサーバーの招待リンク / Discord Server Invite URL (今は使えないようにしてます(サーバーのほうまだ手つかず))
-        public static readonly string DiscordInviteUrl = "https://discord.gg/nUUwVFN2JM";
+        // Discordサーバーの招待リンク / Discord Server Invite URL
+        public static readonly string DiscordInviteUrl = "https://discord.gg/VHJyzSDRUK";
         //public static readonly string MatchmakingRelayUrl = "no";
         public static readonly string MatchmakingRelaySecret = "6rVp2N8xK5mQ9wA1zL4jS7tB3hG0eD9Y";
         // ==========
@@ -60,10 +60,10 @@ namespace TownOfHost
 
         public const string PluginGuid = "com.akebono.TownOfHost-N";
 
-        public const string BepInExPluginVersion = "1.0.0";
-        public const string PluginVersion = "1.0.0";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
-        public const string PluginShowVersion = "1.0.0";
-        public const string ModVersion = ".0";//リリースver用バージョン変更dc9b79
+        public const string BepInExPluginVersion = "1.0.1";
+        public const string PluginVersion = "1.0.1";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
+        public const string PluginShowVersion = "1.0.1";
+        public const string ModVersion = ".1";//リリースver用バージョン変更dc9b79
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;

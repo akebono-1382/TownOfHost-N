@@ -38,7 +38,7 @@ namespace TownOfHost.Roles.AddOns.Common
 
         public static void SetupCustomOption()
         {
-            SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Stamina, fromtext: UtilsOption.GetFrom(From.TownOfHost_Pko));
+            SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Stamina, fromtext: UtilsOption.GetFrom(From.TownOfHost_N));
             AddOnsAssignData.Create(Id + 10, CustomRoles.Stamina, true, true, true, true);
             ObjectOptionitem.Create(Id + 20, "AddonOption", true, "", TabGroup.Addons)
                 .SetOptionName(() => "Role Option").SetSubRoleOptionItem(CustomRoles.Stamina);

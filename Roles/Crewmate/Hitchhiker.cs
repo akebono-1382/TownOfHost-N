@@ -23,7 +23,7 @@ public sealed class Hitchhiker : RoleBase
             "hi",
             "#A0522D",
             (7, 1),
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public Hitchhiker(PlayerControl player)

@@ -20,7 +20,7 @@ public sealed class MassMueder : RoleBase, IKiller, IUsePhantomButton
             SetupOptionItem,
             "mm",
             OptionSort: (6, 8),
-            from: From.TownOfHost_Pko,
+            from: From.TownOfHost_N,
             introSound: () => GetIntroSound(RoleTypes.Impostor)
         );
 

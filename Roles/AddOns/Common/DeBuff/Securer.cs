@@ -22,7 +22,7 @@ namespace TownOfHost.Roles.AddOns.Common
 
         public static void SetupCustomOption()
         {
-            var assignOption = SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Securer, fromtext: UtilsOption.GetFrom(From.TownOfHost_Pko));
+            var assignOption = SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Securer, fromtext: UtilsOption.GetFrom(From.TownOfHost_N));
             AddOnsAssignData.Create(Id + 10, CustomRoles.Securer, false, false, true, false);
             AssignToJackalTeam = BooleanOptionItem.Create(Id + 20, "SecurerAssignToJackalTeam", false, TabGroup.Addons, false)
                 .SetParent(assignOption).SetParentRole(CustomRoles.Securer);

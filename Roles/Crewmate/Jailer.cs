@@ -25,7 +25,7 @@ public sealed class Jailer : RoleBase, IUsePhantomButton, IKiller
             "#4488cc",
             (3, 5),
             true,
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public Jailer(PlayerControl player)

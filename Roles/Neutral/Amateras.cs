@@ -31,7 +31,7 @@ public sealed class Amateras : RoleBase, ISelfVoter, IAdditionalWinner
             true,
             countType: CountTypes.Crew,
             introSound: () => GetIntroSound(RoleTypes.Scientist),
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     static OptionItem OptionAddWin;

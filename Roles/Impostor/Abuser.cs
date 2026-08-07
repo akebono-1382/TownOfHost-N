@@ -28,7 +28,7 @@ public sealed class Abuser : RoleBase, IImpostor, IUsePhantomButton
                 AssignUnitRoles = [CustomRoles.Abuser, CustomRoles.Victim]
             },
             combination: CombinationRoles.AbuserandVictim,
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     static OptionItem VictimWinPriority;

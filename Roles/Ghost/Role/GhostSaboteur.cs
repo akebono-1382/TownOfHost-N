@@ -38,7 +38,7 @@ public static class GhostSaboteur
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.GhostRoles, CustomRoles.GhostSaboteur,
-            fromtext: UtilsOption.GetFrom(From.TownOfHost_Pko));
+            fromtext: UtilsOption.GetFrom(From.TownOfHost_N));
 
         Data = GhostRoleAssingData.Create(
             Id + 1, CustomRoles.GhostSaboteur, CustomRoleTypes.Crewmate);

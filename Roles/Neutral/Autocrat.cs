@@ -21,7 +21,7 @@ public sealed class Autocrat : RoleBase, IAdditionalWinner
             "aut",
             "#8b0000",
             (7, 8),
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     private static OptionItem ExileVoteCount;

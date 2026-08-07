@@ -22,7 +22,7 @@ public sealed class HappyJester : RoleBase, IKiller
             {
                 AssignCountRule = new(0, 15, 1)
             },
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public HappyJester(PlayerControl player)

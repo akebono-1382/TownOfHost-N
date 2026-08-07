@@ -27,7 +27,7 @@ public enum From
     TownOfHost_K,
     TownOfHost_for_E,
     TownOfHost_Enhanced,
-    TownOfHost_Pko,
+    TownOfHost_N,
     Speyrp,
     RevolutionaryHostRoles,
     Love_Couple_Mod,

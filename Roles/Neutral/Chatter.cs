@@ -22,7 +22,7 @@ public sealed class Chatter : RoleBase
             "ct",
             "#FF66B2",
             (5, 0),
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public Chatter(PlayerControl player) : base(RoleInfo, player, () => HasTask.False)

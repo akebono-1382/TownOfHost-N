@@ -24,7 +24,7 @@ public sealed class Scratcher : RoleBase, IAdditionalWinner
             "#d4af37",
             (4, 8),
             true,
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public Scratcher(PlayerControl player)

@@ -31,7 +31,7 @@ public sealed class Ruler : RoleBase, ISelfVoter, IAdditionalWinner
             true,
             countType: CountTypes.Crew,
             introSound: () => GetIntroSound(RoleTypes.Crewmate),
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     static readonly HashSet<Ruler> Instances = new();

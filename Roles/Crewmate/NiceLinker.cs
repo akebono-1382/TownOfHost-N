@@ -23,7 +23,7 @@ public sealed class NiceLinker : RoleBase
             "nl",
             "#aaaaff",
             (1, 7),
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public NiceLinker(PlayerControl player)

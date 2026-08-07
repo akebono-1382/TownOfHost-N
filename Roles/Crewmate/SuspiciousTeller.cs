@@ -24,7 +24,7 @@ public sealed class SuspiciousTeller : RoleBase, ISelfVoter
             "spt",
             "#6b3ec3",
             (3, 2),
-            from: From.TownOfHost_Pko,
+            from: From.TownOfHost_N,
             introSound: () => GetIntroSound(RoleTypes.Scientist)
         );
 

@@ -32,7 +32,7 @@ public sealed class StandMaster : RoleBase, ILNKiller, IUsePhantomButton
             {
                 AssignCountRule = new(1, 1, 1)
             },
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public StandMaster(PlayerControl player)
@@ -478,7 +478,7 @@ public sealed class Stand : RoleBase, ILNKiller
             "#8B4513",
             (6, 4),
             countType: CountTypes.StandMaster,
-            from: From.TownOfHost_Pko
+            from: From.TownOfHost_N
         );
 
     public Stand(PlayerControl player) : base(RoleInfo, player, () => HasTask.ForRecompute)

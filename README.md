@@ -8,10 +8,11 @@
 この Mod はTOH,TOHKに役職や機能など追加したModです
 TOH-Nで起きたバグは本家や他MODには報告しないでまずはTOH-Nに報告してください。<br>
 
-また、TOH-Nに関する質問、バグ報告は基本、[DiscordServer](https://discord.gg/nUUwVFN2JM)でのみ受け付けております。<br>
+また、TOH-Nに関する質問、バグ報告は基本、[DiscordServer](https://discord.gg/VHJyzSDRUK)でのみ受け付けております。<br>
 
 [本家TOHはこちら](https://github.com/tukasa0001/TownOfHost)<br>
 [TOHKはこちら](https://github.com/KYMario/TownOfHost-K)<br>
+[TOHPkoはこちら](https://github.com/satokazoku/TownOfHost-Pko)<br>
 
 ## リリース
 AmongUsバージョン : **17.3.0**~<br>
@@ -79,7 +80,8 @@ Town Of Host-Nの利用をもって"処罰に値する利用方法"内で記載�
 上の【処罰に値する利用方法】の行動をしたら<br>
 Modが使えなくなるよ!<br>
 このMod使うならMod使えなくなっても受け入れるし、<br>
-その処罰に値する利用方法をしないよ！！<br>
+その処罰に値する利用方法をしないよ
+<br>
 ってことです。
 
 **TownOfHost-Nの開発者**<br>
@@ -93,7 +95,7 @@ Modが使えなくなるよ!<br>
 [Town Of Host K](https://github.com/KYMario/TownOfHost-K)<br>
 　Fork元の本家です。<br>TownOfHost_K様にある機能はTownOfHost-Nでも大体実装されています<br
 
-[Town Of Host Pko](https://github.com/KYMario/TownOfHost-K)<br>
+[Town Of Host Pko](https://github.com/satokazoku/TownOfHost-Pko)<br>
 　Fork元です。<br>TownOfHost Pko様にある機能はTownOfHost-Nでも大体実装されています<br>
 
 [Town Of Host Y](https://github.com/Yumenopai/TownOfHost_Y)<br>
@@ -134,4 +136,4 @@ TOR_GM_Haoming_Edition<br>
 　マッドジェスターの参考/移植させていただきました<br>
 
 [ExtremeRoles](https://github.com/yukieiji/ExtremeRoles)<br>
-　アサシンとマーリンの参考/移植、イーター、エボルバーの移植をさせていただきました。<br>
+　アサシンとマーリンの参考/移植、エボルバー、ヘレティックの移植をさせていただきました。<br>
