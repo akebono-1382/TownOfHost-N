@@ -46,6 +46,7 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
         impostorsGetRevenged = optionImpostorsGetRevenged.GetBool();
         madmatesGetRevenged = optionMadmatesGetRevenged.GetBool();
         neutralsGetRevenged = optionNeutralsGetRevenged.GetBool();
+        meetingtarg = false;
 
         targetPlayerId = 255;
 
@@ -88,9 +89,10 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
     private enum ModeOption
     {
         Task,
-        Eject,
         TaskTarget,
-        Meeting
+        Meeting,
+        MeetingTarget,
+        Eject
     }
 
     private enum OptionName
@@ -166,6 +168,9 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
             case ModeOption.Meeting:
                 info.DoKill = false;
                 break;
+            case ModeOption.MeetingTarget:
+                info.DoKill = false;
+                break;
             case ModeOption.TaskTarget:
                 info.DoKill = false;
                 if (!Is(info.AttemptKiller) || info.IsSuicide)
@@ -221,12 +226,17 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
                 Nekomata = false;
                 target = true;
                 break;
+            case ModeOption.MeetingTarget:
+                Nekomata = false;
+                target = true;
+                break;
             case ModeOption.Eject:
                 Nekomata = true;
                 break;
         }
     }
     private bool selfvote;
+    private bool meetingtarg;
     private void checkSelfVote()
     {
         switch (Mode)
@@ -236,6 +246,10 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
                 break;
             case ModeOption.Meeting:
                 selfvote = true;
+                break;
+            case ModeOption.MeetingTarget:
+                selfvote = true;
+                meetingtarg = true;
                 break;
             case ModeOption.TaskTarget:
                 selfvote = false;
@@ -280,97 +294,112 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
 
     public override bool CheckVoteAsVoter(byte votedForId, PlayerControl voter)
     {
-        if (!Canuseability()) return true;
-            if (CheckSelfVoteMode(Player, votedForId, out var status))
-            {
-                if (status is VoteStatus.Self)
-                    Utils.SendMessage(string.Format(GetString("SkillMode"), GetString("Mode.Alchemist"), GetString("Vote.Alchemist")) + GetString("VoteSkillMode"), Player.PlayerId);
-                if (status is VoteStatus.Skip)
-                    Utils.SendMessage(GetString("VoteSkillFin"), Player.PlayerId);
-                if (status is VoteStatus.Vote)
-                    AlchemistreBullet(votedForId);
-                SetMode(Player, status is VoteStatus.Self);
-                return false;
-            }
+        // 修正点: 他者の投票を誤って処理しないようにガードを追加し、selfvoteが無効な場合は何もしない
+        if (!selfvote) return true;                 // selfvoteモードでないなら通常の投票を許可
+        if (!Canuseability()) return true;          // 能力使用ができないなら通常投票
+        if (!Is(voter)) return true;                // 自分以外の投票には反応しない
+
+        if (CheckSelfVoteMode(Player, votedForId, out var status))
+        {
+            if (status is VoteStatus.Self)
+                Utils.SendMessage(string.Format(GetString("Mode.Heretic"), Player.PlayerId));
+            if (status is VoteStatus.Skip)
+                Utils.SendMessage(GetString("VoteSkillFin"), Player.PlayerId);
+            if (status is VoteStatus.Vote)
+                HereticSelfvote(votedForId);
+            SetMode(Player, status is VoteStatus.Self);
+            return false;
+        }
         return true;
     }
-    public void AlchemistreBullet(byte votedForId)
+    public void HereticSelfvote(byte votedForId)
     {
         if (!selfvote) return;
-        PlayerState state;
-        var target = PlayerCatch.GetPlayerById(votedForId);
-        if (!target.IsAlive()) return;
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (target.Is(CustomRoles.Stand))
+        if (meetingtarg)
         {
-            var sm = target.GetRoleClass() as TownOfHost.Roles.Neutral.Stand;
-            var owner = sm?.GetOwner();
-            if (owner != null && owner.Player.IsAlive())
+            var target = PlayerCatch.GetPlayerById(votedForId);
+            targetPlayerId = target.PlayerId;
+            selfvote = false;
+        }
+        else
+        {
+            var target = PlayerCatch.GetPlayerById(votedForId);
+            if (!target.IsAlive()) return;
+            if (!AmongUsClient.Instance.AmHost) return;
+            if (target.Is(CustomRoles.Stand))
             {
-                Utils.SendMessage(
-                    "<color=#8B4513>残念だったな！スタンドは撃ち抜けないんだぜ！</color>",
-                    Player.PlayerId);
+                var sm = target.GetRoleClass() as TownOfHost.Roles.Neutral.Stand;
+                var owner = sm?.GetOwner();
+                if (owner != null && owner.Player.IsAlive())
+                {
+                    Utils.SendMessage(
+                        "<color=#8B4513>残念だったな！スタンドは撃ち抜けないんだぜ！</color>",
+                        Player.PlayerId);
+                    return;
+                }
+            }
+            var meetingHud = MeetingHud.Instance;
+            var hudManager = DestroyableSingleton<HudManager>.Instance.KillOverlay;
+
+            if ((PlayerCatch.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Guesser)) || CustomRolesHelper.CheckGuesser()) && !Options.ExHideChatCommand.GetBool())
+                ChatManager.SendPreviousMessagesToAll();
+
+            var AlienTairo = false;
+            var targetroleclass = target.GetRoleClass();
+            if ((targetroleclass as Alien)?.CheckSheriffKill(target) == true) AlienTairo = true;
+            if ((targetroleclass as JackalAlien)?.CheckSheriffKill(target) == true) AlienTairo = true;
+            if ((targetroleclass as AlienHijack)?.CheckSheriffKill(target) == true) AlienTairo = true;
+
+            if (!AlienTairo)
+            {
+                // target 側の PlayerState を明示的に宣言して使う
+                var targetState = PlayerState.GetByPlayerId(target.PlayerId);
+                target.RpcExileV3();
+                targetState.DeathReason = CustomDeathReason.Spell;
+                targetState.SetDead();
+
+                // 自分（発動者）の PlayerState も別変数で扱う
+                var selfState = PlayerState.GetByPlayerId(Player.PlayerId);
+                Player.RpcExileV3();
+                selfState.DeathReason = CustomDeathReason.Spell;
+                selfState.SetDead();
+
+                UtilsGameLog.AddGameLog($"Alchemist", $"{UtilsName.GetPlayerColor(target, true)}(<b>{UtilsRoleText.GetTrueRoleName(target.PlayerId, false)}</b>) [{Utils.GetVitalText(target.PlayerId, true)}]");
+                UtilsGameLog.AddGameLogsub($"\n\t⇐ {UtilsName.GetPlayerColor(Player, true)}(<b>{UtilsRoleText.GetTrueRoleName(Player.PlayerId, false)}</b>)");
+
+                if (Options.ExHideChatCommand.GetBool())
+                {
+                    ChatManager.OnDisconnectOrDeadPlayer(target.PlayerId);
+                }
+                Utils.SendMessage(UtilsName.GetPlayerColor(target, true) + GetString("Meetingkill"), title: GetString("MSKillTitle"));
+                foreach (var go in PlayerCatch.AllPlayerControls.Where(pc => pc != null && !pc.IsAlive()))
+                {
+                    Utils.SendMessage(string.Format(GetString("MMeetingKill"), UtilsName.GetPlayerColor(Player, true), UtilsName.GetPlayerColor(target, true)), go.PlayerId, GetString("RMSKillTitle"));
+                }
+
+                MeetingVoteManager.ResetVoteManager(target.PlayerId);
+                if (target != PlayerControl.LocalPlayer) Player.RpcMeetingKill(target);
                 return;
             }
-        }
-        var meetingHud = MeetingHud.Instance;
-        var hudManager = DestroyableSingleton<HudManager>.Instance.KillOverlay;
-
-        if ((PlayerCatch.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Guesser)) || CustomRolesHelper.CheckGuesser()) && !Options.ExHideChatCommand.GetBool())
-            ChatManager.SendPreviousMessagesToAll();
-
-        var AlienTairo = false;
-        var targetroleclass = target.GetRoleClass();
-        if ((targetroleclass as Alien)?.CheckSheriffKill(target) == true) AlienTairo = true;
-        if ((targetroleclass as JackalAlien)?.CheckSheriffKill(target) == true) AlienTairo = true;
-        if ((targetroleclass as AlienHijack)?.CheckSheriffKill(target) == true) AlienTairo = true;
-
-        if (!AlienTairo)
-        {
-            state = PlayerState.GetByPlayerId(target.PlayerId);
-            target.RpcExileV3();
-            state.DeathReason = CustomDeathReason.Spell;
-            state.SetDead();
-            state = PlayerState.GetByPlayerId(Player.PlayerId);
-            target.RpcExileV3();
-            state.DeathReason = CustomDeathReason.Spell;
-            state.SetDead();
-
-            UtilsGameLog.AddGameLog($"Alchemist", $"{UtilsName.GetPlayerColor(target, true)}(<b>{UtilsRoleText.GetTrueRoleName(target.PlayerId, false)}</b>) [{Utils.GetVitalText(target.PlayerId, true)}]");
-            UtilsGameLog.AddGameLogsub($"\n\t⇐ {UtilsName.GetPlayerColor(Player, true)}(<b>{UtilsRoleText.GetTrueRoleName(Player.PlayerId, false)}</b>)");
+            Player.RpcExileV3();
+            MyState.DeathReason = target.Is(CustomRoles.Tairou) && Tairou.TairoDeathReason ? CustomDeathReason.Counter :
+                                target.Is(CustomRoles.Alien) && Alien.TairoDeathReason ? CustomDeathReason.Counter :
+                                (target.Is(CustomRoles.JackalAlien) && JackalAlien.TairoDeathReason ? CustomDeathReason.Counter :
+                                (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire));
+            MyState.SetDead();
 
             if (Options.ExHideChatCommand.GetBool())
             {
-                ChatManager.OnDisconnectOrDeadPlayer(target.PlayerId);
+                ChatManager.OnDisconnectOrDeadPlayer(Player.PlayerId);
             }
-            Utils.SendMessage(UtilsName.GetPlayerColor(target, true) + GetString("Meetingkill"), title: GetString("MSKillTitle"));
+            Utils.SendMessage(UtilsName.GetPlayerColor(Player, true) + GetString("Meetingkill"), title: GetString("MSKillTitle"));
             foreach (var go in PlayerCatch.AllPlayerControls.Where(pc => pc != null && !pc.IsAlive()))
             {
-                Utils.SendMessage(string.Format(GetString("MMeetingKill"), UtilsName.GetPlayerColor(Player, true), UtilsName.GetPlayerColor(target, true)), go.PlayerId, GetString("RMSKillTitle"));
+                Utils.SendMessage(string.Format(GetString("MMeetingKillfall"), UtilsName.GetPlayerColor(Player, true), UtilsName.GetPlayerColor(target, true)), go.PlayerId, GetString("RMSKillTitle"));
             }
 
-            MeetingVoteManager.ResetVoteManager(target.PlayerId);
-            if (target != PlayerControl.LocalPlayer) Player.RpcMeetingKill(target);
-            return;
+            MeetingVoteManager.ResetVoteManager(Player.PlayerId);
+            if (Player != PlayerControl.LocalPlayer) Player.RpcMeetingKill(Player);
         }
-        Player.RpcExileV3();
-        MyState.DeathReason = target.Is(CustomRoles.Tairou) && Tairou.TairoDeathReason ? CustomDeathReason.Counter :
-                            target.Is(CustomRoles.Alien) && Alien.TairoDeathReason ? CustomDeathReason.Counter :
-                            (target.Is(CustomRoles.JackalAlien) && JackalAlien.TairoDeathReason ? CustomDeathReason.Counter :
-                            (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire));
-        MyState.SetDead();
-
-        if (Options.ExHideChatCommand.GetBool())
-        {
-            ChatManager.OnDisconnectOrDeadPlayer(Player.PlayerId);
-        }
-        Utils.SendMessage(UtilsName.GetPlayerColor(Player, true) + GetString("Meetingkill"), title: GetString("MSKillTitle"));
-        foreach (var go in PlayerCatch.AllPlayerControls.Where(pc => pc != null && !pc.IsAlive()))
-        {
-            Utils.SendMessage(string.Format(GetString("MMeetingKillfall"), UtilsName.GetPlayerColor(Player, true), UtilsName.GetPlayerColor(target, true)), go.PlayerId, GetString("RMSKillTitle"));
-        }
-
-        MeetingVoteManager.ResetVoteManager(Player.PlayerId);
-        if (Player != PlayerControl.LocalPlayer) Player.RpcMeetingKill(Player);
     }
 }

@@ -437,6 +437,14 @@
 "PolarisRewindKillCool","Rewind Kill Cooldown","巻き戻るキルクール"
 "PolarisRestoredRadiance","Restored Radiance","回復する輝き"
 "Heretic","Heretic","ヘレティック"
+"HereticInfo","If they're enemies of the Impostor, I'd give my life to stop them...","ご主人様の敵なら、命に引き替えても..."
+"HereticInfoLong","Although they are a crewmate, they side with the Imposter. \nThey can use an ability called “Curse Kill,” and the method of use and activation conditions for “Curse Kill” vary depending on the mode. \nIn Task mode, the ability is activated by pressing the kill button on someone. They kill the target in exchange for their own life. \nIn Target Designation mode (during a Task), pressing the kill button on someone also activates the ability, but no kill occurs; instead, the target is designated, and an “×” appears next to their name during the meeting.\nIf you are exiled, the target is taken down with you. You can designate a target only once. \nIn Mode = Meeting, the ability is activated by voting for yourself during the meeting. \nAfter voting for yourself, you can vote for any opponent to kill them, but you will also die. \nIn Mode = Target Designation (during a meeting), the ability is also activated by voting for yourself during the meeting; however, even if you vote for an opponent after voting for yourself, no kill occurs, and the person you voted for becomes the target. \nBehavior after designating a target is the same as when Mode = Target Designation (During a Task).\nWhen Mode = Exile, behavior is the same as that of the Black Cat.","クルーだがインポスターの味方をする。\n「呪殺」という能力を使うことができ、「呪殺」の使用方法や発動条件はモードによって変わる。\nモード=タスク中の場合、誰かにキルボタンを押すことで能力発動。自らの命と引き換えに、相手をキルする。\nモード=ターゲット指定(タスク中)の場合も、誰かにキルボタンを押すことで能力が発動するが、キルは発生せず、キル相手がターゲットに指定され、会議時名前に「×」が付く。\n自身が追放されるとターゲットも道連れされる。ターゲットは一度しか指定できない。\nモード=会議中の場合は、会議で自投票することで能力発動。\n自投票後好きな相手に投票することでその相手をキルするが、自身も死亡する。\nモード=ターゲット指定(会議中)の場合も、会議で自投票することで能力が発動するが、自投票後好きな相手に投票してもキルは行われず、投票相手がターゲットになる。\nターゲットに指定した後の挙動はモード=ターゲット指定(タスク中)の時と同様。\nモード=追放時の時は、黒猫と同様の挙動。"
+"Mode","Mode","モード"
+"Task","Task in Progress","タスク中"
+"TaskTarget","Target Selection (During Task)","ターゲット指定(タスク中)"
+"Meeting","Meeting","会議中"
+"MeetingTarget","Target Selection (During Meeting)","ターゲット指定(会議中)"
+"Eject","Eject","追放時"
 
 "WarlockInfoLong","Pressing the Phantom button will cast a curse on the kill target. \nThe next time you press the Phantom button, the cursed person will kill the person closest to them.","ファントムボタンを押すことでキルターゲットに呪いをかけることができます。\n次にファントムボタンを押すと呪った人が一番近くの人をキルします。"
 "## 役職説明ショート"
@@ -2695,6 +2703,7 @@
 "Mode.AlienUetuke"," Mode","<#ff1919>植え付け</color>モード"
 "Mode.Dictator","Dictator","<#df9b00>独裁</color>モード"
 "Mode.Guess","Guess Mode","<#be7c35>推測</color>モード"
+"Mode.Heretic","Self Vote is complete! You can now use abilities based on your mode!","自投票が完了しました!モードに応じた能力を使用できます!"
 
 "Mode.CrewSatellite","Search Mode","<#00e1ff>探知</color>モード","","","","",""
 
