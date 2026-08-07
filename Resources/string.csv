@@ -424,7 +424,8 @@
 "進化","Evolution","進化"
 "SubKill","Kill","キル","击杀","殺人鍵","Убийство","Matar",""
 "WarlcokPhantomCooldown","Curse Cooldown","呪いクールダウン"
-"Polaris","Polaris","ポラリス"
+"Polaris","Astral","アストラル"
+"## ↑決して英語力が終わってるわけではなく途中で役名変わったからです..."
 "PolarisFirstshine","Start Shine","最初の輝き"
 "PolarisDecreasingTime","Time per point of brightness loss","輝きが1減少する時間"
 "PolarisReducedperkill","Brightness loss per kill","キルごとに減少する輝き"
@@ -435,6 +436,7 @@
 "PolarisCanUseTomosibi","Can we rewind Kirkool and restore its brilliance","キルクールを巻き戻して輝きを回復できるか"
 "PolarisRewindKillCool","Rewind Kill Cooldown","巻き戻るキルクール"
 "PolarisRestoredRadiance","Restored Radiance","回復する輝き"
+"Heretic","Heretic","ヘレティック"
 
 "WarlockInfoLong","Pressing the Phantom button will cast a curse on the kill target. \nThe next time you press the Phantom button, the cursed person will kill the person closest to them.","ファントムボタンを押すことでキルターゲットに呪いをかけることができます。\n次にファントムボタンを押すと呪った人が一番近くの人をキルします。"
 "## 役職説明ショート"

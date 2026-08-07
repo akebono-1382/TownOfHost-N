@@ -917,6 +917,8 @@ public enum CustomRoles
     Nue,
     MadHacker,
     MadSheriff,
+    //TOH-N
+    Heretic,
     //DEBUG only Madmate
     //Crewmate(Vanilla)
     Engineer,

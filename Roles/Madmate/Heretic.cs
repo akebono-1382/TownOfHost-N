@@ -1,0 +1,376 @@
+using System.Linq;
+using AmongUs.GameOptions;
+using TownOfHost.Modules;
+using TownOfHost.Modules.ChatManager;
+using TownOfHost.Roles.Core;
+using TownOfHost.Roles.Core.Interfaces;
+using TownOfHost.Roles.Impostor;
+using TownOfHost.Roles.Neutral;
+using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
+using static TownOfHost.Modules.SelfVoteManager;
+
+namespace TownOfHost.Roles.Madmate;
+
+public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReasonSeeable, INekomata, ISelfVoter
+{
+    public static readonly SimpleRoleInfo RoleInfo =
+        SimpleRoleInfo.Create(
+            typeof(Heretic),
+            player => new Heretic(player),
+            CustomRoles.Heretic,
+            () => RoleTypes.Impostor,
+            CustomRoleTypes.Madmate,
+            21500,
+            SetupOptionItem,
+            "he",
+            OptionSort: (2, 1),
+            isDesyncImpostor: true,
+            introSound: () => GetIntroSound(RoleTypes.Phantom),
+            from: From.ExtremeRoles
+        );
+
+    public Heretic(PlayerControl player)
+    : base(
+        RoleInfo,
+        player,
+        () => HasTask.False
+    )
+    {
+        KillCooldown = OptionKillCooldown.GetFloat();
+        CurrentSuicideMotion = (SuicideMotionOption)OptionSuicideMotion.GetValue();
+        Mode = (ModeOption)OptionMode.GetValue();
+        CanVent = OptionCanVent.GetBool();
+        CanSeeKillFlash = Options.MadmateCanSeeKillFlash.GetBool();
+        CanSeeDeathReason = Options.MadmateCanSeeDeathReason.GetBool();
+
+        impostorsGetRevenged = optionImpostorsGetRevenged.GetBool();
+        madmatesGetRevenged = optionMadmatesGetRevenged.GetBool();
+        neutralsGetRevenged = optionNeutralsGetRevenged.GetBool();
+
+        targetPlayerId = 255;
+
+        checkSelfVote();
+    }
+
+
+    private static bool impostorsGetRevenged;
+    private static bool madmatesGetRevenged;
+    private static bool neutralsGetRevenged;
+
+    private static OptionItem OptionKillCooldown;
+    private static OptionItem OptionSuicideMotion;
+    private static OptionItem OptionMode;
+    private static OptionItem OptionCanVent;
+
+    private static float KillCooldown;
+    private static bool CanVent;
+    private static bool CanSeeKillFlash;
+    private static bool CanSeeDeathReason;
+    public byte targetPlayerId;
+
+    /// <summary>インポスターを道連れ候補に含む</summary>
+    private static BooleanOptionItem optionImpostorsGetRevenged;
+
+    /// <summary>マッドメイトを道連れ候補に含む</summary>
+    private static BooleanOptionItem optionMadmatesGetRevenged;
+
+    /// <summary>ニュートラルを道連れ候補に含む</summary>
+    private static BooleanOptionItem optionNeutralsGetRevenged;
+    private SuicideMotionOption CurrentSuicideMotion;
+    private ModeOption Mode;
+
+    private enum SuicideMotionOption
+    {
+        Default,
+        MotionKilled
+    }
+
+    private enum ModeOption
+    {
+        Task,
+        Eject,
+        TaskTarget,
+        Meeting
+    }
+
+    private enum OptionName
+    {
+        SillySheriffSuicideMotion,
+        Mode,
+        BlackCatImpostorsGetRevenged,
+        BlackCatMadmatesGetRevenged,
+        BlackCatNeutralsGetRevenged,
+    }
+
+    private static void SetupOptionItem()
+    {
+        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, OptionBaseCoolTime, 30f, false)
+            .SetValueFormat(OptionFormat.Seconds);
+        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanVent, false, false);
+        OptionSuicideMotion = StringOptionItem.Create(RoleInfo, 13, OptionName.SillySheriffSuicideMotion, EnumHelper.GetAllNames<SuicideMotionOption>(), 0, false);
+        OptionMode = StringOptionItem.Create(RoleInfo, 14, OptionName.Mode, EnumHelper.GetAllNames<ModeOption>(), 0, false);
+        optionImpostorsGetRevenged =
+        BooleanOptionItem.Create(RoleInfo, 15,
+        OptionName.BlackCatImpostorsGetRevenged,
+        false, false);
+
+        optionMadmatesGetRevenged =
+            BooleanOptionItem.Create(RoleInfo, 16,
+                OptionName.BlackCatMadmatesGetRevenged,
+                false, false);
+
+        optionNeutralsGetRevenged =
+            BooleanOptionItem.Create(RoleInfo, 17,
+                OptionName.BlackCatNeutralsGetRevenged,
+                false, false);
+        RoleAddAddons.Create(RoleInfo, 20, MadMate: true);
+    }
+
+    public bool CanUseKillButton() => Player.IsAlive();
+    public float CalculateKillCooldown() => KillCooldown;
+    public bool CanUseImpostorVentButton() => CanVent;
+    public bool CanUseSabotageButton() => false;
+    public bool? CheckKillFlash(MurderInfo info) => CanSeeKillFlash;
+    public bool? CheckSeeDeathReason(PlayerControl seen) => CanSeeDeathReason;
+    public override CustomRoles TellResults(PlayerControl player) => Options.MadTellOpt();
+
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        opt.SetVision(false);
+    }
+    public void OnCheckMurderAsKiller(MurderInfo info)
+    {
+        var (killer, target) = info.AttemptTuple;
+        switch (Mode)
+        {
+            case ModeOption.Task:
+                if (!Is(info.AttemptKiller) || info.IsSuicide) return;
+
+                PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Spell;
+                PlayerState.GetByPlayerId(target.PlayerId).DeathReason = CustomDeathReason.Spell;
+
+                switch (CurrentSuicideMotion)
+                {
+                    case SuicideMotionOption.Default:
+                        killer.RpcMurderPlayer(killer);
+                        break;
+                    case SuicideMotionOption.MotionKilled:
+                        target.RpcMurderPlayer(killer);
+                        break;
+                }
+                UtilsGameLog.AddGameLog("Heretic", string.Format(GetString("SheriffMissLog"), UtilsName.GetPlayerColor(target.PlayerId)));
+                break;
+            case ModeOption.Eject:
+                info.DoKill = false;
+                break;
+            case ModeOption.Meeting:
+                info.DoKill = false;
+                break;
+            case ModeOption.TaskTarget:
+                info.DoKill = false;
+                if (!Is(info.AttemptKiller) || info.IsSuicide)
+                {
+                    return;
+                }
+                if (targetPlayerId == 255)
+                {
+                    targetPlayerId = target.PlayerId;
+                }
+                break;
+        }
+    }
+
+    public bool OverrideKillButtonText(out string text)
+    {
+        text = GetString("DeathReason.Spell");
+        return true;
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        // seen が省略されたら seer を使う
+        seen ??= seer;
+
+        // target フラグを最新化
+        checkNekomata();
+
+        if (!target) return "";
+
+        // PlayerId と targetPlayerId を比較して一致する場合のみマークを付ける
+        if (seen.PlayerId == targetPlayerId)
+            return Utils.ColorString(RoleInfo.RoleColor, "×");
+
+        return "";
+    }
+
+    public bool DoRevenge(CustomDeathReason deathReason)
+    => deathReason == CustomDeathReason.Vote;
+
+    private bool Nekomata;
+    private bool target;
+    private void checkNekomata()
+    {
+        switch (Mode)
+        {
+            case ModeOption.Task:
+                Nekomata = false;
+                break;
+            case ModeOption.Meeting:
+                Nekomata = false;
+                break;
+            case ModeOption.TaskTarget:
+                Nekomata = false;
+                target = true;
+                break;
+            case ModeOption.Eject:
+                Nekomata = true;
+                break;
+        }
+    }
+    private bool selfvote;
+    private void checkSelfVote()
+    {
+        switch (Mode)
+        {
+            case ModeOption.Task:
+                selfvote = false;
+                break;
+            case ModeOption.Meeting:
+                selfvote = true;
+                break;
+            case ModeOption.TaskTarget:
+                selfvote = false;
+                break;
+            case ModeOption.Eject:
+                selfvote = false;
+                break;
+        }
+    }
+
+
+
+    public bool IsCandidate(PlayerControl player)
+    {
+        checkNekomata();
+        if (Nekomata)
+        {
+            return player.GetCustomRole().GetCustomRoleTypes() switch
+            {
+                CustomRoleTypes.Impostor => impostorsGetRevenged,
+                CustomRoleTypes.Madmate => madmatesGetRevenged,
+                CustomRoleTypes.Neutral => neutralsGetRevenged,
+                _ => true,
+            };
+        }
+        else if (target)
+        {
+            return player.PlayerId == targetPlayerId;
+        }
+        else
+        {
+            return player.GetCustomRole().GetCustomRoleTypes() switch
+            {
+                CustomRoleTypes.Impostor => false,
+                CustomRoleTypes.Madmate => false,
+                CustomRoleTypes.Neutral => false,
+                _ => false,
+            };
+        }
+    }
+    bool ISelfVoter.CanUseVoted() => selfvote;
+
+    public override bool CheckVoteAsVoter(byte votedForId, PlayerControl voter)
+    {
+        if (!Canuseability()) return true;
+            if (CheckSelfVoteMode(Player, votedForId, out var status))
+            {
+                if (status is VoteStatus.Self)
+                    Utils.SendMessage(string.Format(GetString("SkillMode"), GetString("Mode.Alchemist"), GetString("Vote.Alchemist")) + GetString("VoteSkillMode"), Player.PlayerId);
+                if (status is VoteStatus.Skip)
+                    Utils.SendMessage(GetString("VoteSkillFin"), Player.PlayerId);
+                if (status is VoteStatus.Vote)
+                    AlchemistreBullet(votedForId);
+                SetMode(Player, status is VoteStatus.Self);
+                return false;
+            }
+        return true;
+    }
+    public void AlchemistreBullet(byte votedForId)
+    {
+        if (!selfvote) return;
+        PlayerState state;
+        var target = PlayerCatch.GetPlayerById(votedForId);
+        if (!target.IsAlive()) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (target.Is(CustomRoles.Stand))
+        {
+            var sm = target.GetRoleClass() as TownOfHost.Roles.Neutral.Stand;
+            var owner = sm?.GetOwner();
+            if (owner != null && owner.Player.IsAlive())
+            {
+                Utils.SendMessage(
+                    "<color=#8B4513>残念だったな！スタンドは撃ち抜けないんだぜ！</color>",
+                    Player.PlayerId);
+                return;
+            }
+        }
+        var meetingHud = MeetingHud.Instance;
+        var hudManager = DestroyableSingleton<HudManager>.Instance.KillOverlay;
+
+        if ((PlayerCatch.AllPlayerControls.Any(pc => pc.Is(CustomRoles.Guesser)) || CustomRolesHelper.CheckGuesser()) && !Options.ExHideChatCommand.GetBool())
+            ChatManager.SendPreviousMessagesToAll();
+
+        var AlienTairo = false;
+        var targetroleclass = target.GetRoleClass();
+        if ((targetroleclass as Alien)?.CheckSheriffKill(target) == true) AlienTairo = true;
+        if ((targetroleclass as JackalAlien)?.CheckSheriffKill(target) == true) AlienTairo = true;
+        if ((targetroleclass as AlienHijack)?.CheckSheriffKill(target) == true) AlienTairo = true;
+
+        if (!AlienTairo)
+        {
+            state = PlayerState.GetByPlayerId(target.PlayerId);
+            target.RpcExileV3();
+            state.DeathReason = CustomDeathReason.Spell;
+            state.SetDead();
+            state = PlayerState.GetByPlayerId(Player.PlayerId);
+            target.RpcExileV3();
+            state.DeathReason = CustomDeathReason.Spell;
+            state.SetDead();
+
+            UtilsGameLog.AddGameLog($"Alchemist", $"{UtilsName.GetPlayerColor(target, true)}(<b>{UtilsRoleText.GetTrueRoleName(target.PlayerId, false)}</b>) [{Utils.GetVitalText(target.PlayerId, true)}]");
+            UtilsGameLog.AddGameLogsub($"\n\t⇐ {UtilsName.GetPlayerColor(Player, true)}(<b>{UtilsRoleText.GetTrueRoleName(Player.PlayerId, false)}</b>)");
+
+            if (Options.ExHideChatCommand.GetBool())
+            {
+                ChatManager.OnDisconnectOrDeadPlayer(target.PlayerId);
+            }
+            Utils.SendMessage(UtilsName.GetPlayerColor(target, true) + GetString("Meetingkill"), title: GetString("MSKillTitle"));
+            foreach (var go in PlayerCatch.AllPlayerControls.Where(pc => pc != null && !pc.IsAlive()))
+            {
+                Utils.SendMessage(string.Format(GetString("MMeetingKill"), UtilsName.GetPlayerColor(Player, true), UtilsName.GetPlayerColor(target, true)), go.PlayerId, GetString("RMSKillTitle"));
+            }
+
+            MeetingVoteManager.ResetVoteManager(target.PlayerId);
+            if (target != PlayerControl.LocalPlayer) Player.RpcMeetingKill(target);
+            return;
+        }
+        Player.RpcExileV3();
+        MyState.DeathReason = target.Is(CustomRoles.Tairou) && Tairou.TairoDeathReason ? CustomDeathReason.Counter :
+                            target.Is(CustomRoles.Alien) && Alien.TairoDeathReason ? CustomDeathReason.Counter :
+                            (target.Is(CustomRoles.JackalAlien) && JackalAlien.TairoDeathReason ? CustomDeathReason.Counter :
+                            (target.Is(CustomRoles.AlienHijack) && Alien.TairoDeathReason ? CustomDeathReason.Counter : CustomDeathReason.Misfire));
+        MyState.SetDead();
+
+        if (Options.ExHideChatCommand.GetBool())
+        {
+            ChatManager.OnDisconnectOrDeadPlayer(Player.PlayerId);
+        }
+        Utils.SendMessage(UtilsName.GetPlayerColor(Player, true) + GetString("Meetingkill"), title: GetString("MSKillTitle"));
+        foreach (var go in PlayerCatch.AllPlayerControls.Where(pc => pc != null && !pc.IsAlive()))
+        {
+            Utils.SendMessage(string.Format(GetString("MMeetingKillfall"), UtilsName.GetPlayerColor(Player, true), UtilsName.GetPlayerColor(target, true)), go.PlayerId, GetString("RMSKillTitle"));
+        }
+
+        MeetingVoteManager.ResetVoteManager(Player.PlayerId);
+        if (Player != PlayerControl.LocalPlayer) Player.RpcMeetingKill(Player);
+    }
+}
