@@ -37,7 +37,6 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
     )
     {
         KillCooldown = OptionKillCooldown.GetFloat();
-        CurrentSuicideMotion = (SuicideMotionOption)OptionSuicideMotion.GetValue();
         Mode = (ModeOption)OptionMode.GetValue();
         CanVent = OptionCanVent.GetBool();
         CanSeeKillFlash = Options.MadmateCanSeeKillFlash.GetBool();
@@ -134,7 +133,21 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
     public bool? CheckKillFlash(MurderInfo info) => CanSeeKillFlash;
     public bool? CheckSeeDeathReason(PlayerControl seen) => CanSeeDeathReason;
     public override CustomRoles TellResults(PlayerControl player) => Options.MadTellOpt();
-
+    bool IKiller.CanKill
+    {
+        get
+        {
+            return Mode switch
+            {
+                ModeOption.Task => true,
+                ModeOption.TaskTarget => true,
+                ModeOption.Meeting => false,
+                ModeOption.MeetingTarget => false,
+                ModeOption.Eject => false,
+                _ => false,
+            };
+        }
+    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         opt.SetVision(false);
