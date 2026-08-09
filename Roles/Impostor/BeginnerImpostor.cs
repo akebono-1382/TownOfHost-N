@@ -23,7 +23,7 @@ public sealed class BeginnerImpostor : RoleBase, IImpostor, IUsePhantomButton
             "bi",
             "#ff1919",
             OptionSort: (4, 6),
-            from: From.TownOfHost_N,
+            from: From.TownOfHost_Pko,
             assignInfo: new RoleAssignInfo(CustomRoles.BeginnerImpostor, CustomRoleTypes.Impostor)
             {
                 AssignCountRule = new(1, 1, 1)

@@ -423,5 +423,10 @@ namespace TownOfHost.Roles.Impostor
                 Burnouted = false;
             }
         }
+        public override bool OverrideAbilityButton(out string text)
+        {
+            text = "jibaku_Ability";
+            return true;
+        }
     }
 }

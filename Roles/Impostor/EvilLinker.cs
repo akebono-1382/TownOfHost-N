@@ -22,8 +22,7 @@ public sealed class EvilLinker : RoleBase, IImpostor, IUsePhantomButton
             126700,
             SetupOptionItem,
             "el",
-            OptionSort: (2, 11),
-            from: From.TownOfHost_N
+            OptionSort: (2, 11)
         );
 
     public EvilLinker(PlayerControl player)
@@ -77,6 +76,17 @@ public sealed class EvilLinker : RoleBase, IImpostor, IUsePhantomButton
     {
         AdjustKillCooldown = false;
         ResetCooldown = false;
+
+        if (!Player.IsAlive()) return;
+        if (cooldownTimer > 0f) return;
+
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            SendActionRpc();
+            return;
+        }
+
+        PerformPlacePortal();
     }
 
     class LinkPair

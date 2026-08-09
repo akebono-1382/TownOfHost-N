@@ -996,7 +996,7 @@ public enum CustomRoles
     Observer,
     Satellite,
     Merlin,
-    //TOH-N
+    //TOH-Pko
     NiceGuesser,
     Pukupuku,
     Medium,
@@ -1010,7 +1010,7 @@ public enum CustomRoles
     NiceWorkaholic,
     Jailer,
     //TOH-N
-    Alchemist,
+    //Alchemist,
     //DEBUG only Crewmate
     Analyzer,
     //Neutral
@@ -1084,7 +1084,7 @@ public enum CustomRoles
     Fool,
     JackalWolf,
     TaskPlayerB,
-    //TOH-N
+    //TOH-Pko
     StandMaster,
     Chatter,
     BatGirl,
@@ -1094,6 +1094,8 @@ public enum CustomRoles
     Villain,
     Scratcher,
     HappyJester,
+    //TOH-N
+    Obolus,
     //DEBUG only Neutral.
     //HideAndSeek
     HASFox,

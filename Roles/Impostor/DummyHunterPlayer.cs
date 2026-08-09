@@ -18,7 +18,7 @@ public sealed class DummyHunterPlayer : RoleBase, IUsePhantomButton
             SetupOptionItem,
             "dhp",
             "#e0b0ff",
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     public DummyHunterPlayer(PlayerControl player)

@@ -23,7 +23,7 @@ public sealed class Zombie : RoleBase
             "#6f8f4d",
             (5, 5),
             countType: CountTypes.Crew,
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     static OptionItem OptionCanVent;

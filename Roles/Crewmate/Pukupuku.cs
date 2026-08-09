@@ -18,7 +18,7 @@ namespace TownOfHost.Roles.Crewmate
                 "Pukupuku",
                 "#55ccff",
                 (7, 0),
-                from: From.TownOfHost_N
+                from: From.TownOfHost_Pko
             );
 
         private static OptionItem ModeOption;

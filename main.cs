@@ -60,10 +60,10 @@ namespace TownOfHost
 
         public const string PluginGuid = "com.akebono.TownOfHost-N";
 
-        public const string BepInExPluginVersion = "1.0.2";
-        public const string PluginVersion = "1.0.2";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
-        public const string PluginShowVersion = "1.0.2";
-        public const string ModVersion = ".2";//リリースver用バージョン変更dc9b79
+        public const string BepInExPluginVersion = "1.1.0.0";
+        public const string PluginVersion = "1.1.0.0";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
+        public const string PluginShowVersion = "1.1.0.0";
+        public const string ModVersion = ".0.0";//リリースver用バージョン変更dc9b79
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
         public static bool DebugVersion = false;
@@ -508,6 +508,7 @@ namespace TownOfHost
         Victim = CustomRoles.Victim,
         Amateras = CustomRoles.Amateras,
         Ruler = CustomRoles.Ruler,
+        Obolus = CustomRoles.Obolus,
 
         HASTroll = CustomRoles.HASTroll,
         TaskPlayerB = CustomRoles.TaskPlayerB,

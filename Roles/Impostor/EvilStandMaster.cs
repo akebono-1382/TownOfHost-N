@@ -24,7 +24,7 @@ public sealed class EvilStandMaster : RoleBase, IImpostor, IUsePhantomButton
             SetupOptionItem,
             "esm",
             OptionSort: (3, 11),
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     public EvilStandMaster(PlayerControl player) : base(RoleInfo, player) { }

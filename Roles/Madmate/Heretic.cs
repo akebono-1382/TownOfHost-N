@@ -58,7 +58,6 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
     private static bool neutralsGetRevenged;
 
     private static OptionItem OptionKillCooldown;
-    private static OptionItem OptionSuicideMotion;
     private static OptionItem OptionMode;
     private static OptionItem OptionCanVent;
 
@@ -76,7 +75,6 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
 
     /// <summary>ニュートラルを道連れ候補に含む</summary>
     private static BooleanOptionItem optionNeutralsGetRevenged;
-    private SuicideMotionOption CurrentSuicideMotion;
     private ModeOption Mode;
 
     private enum SuicideMotionOption
@@ -162,18 +160,8 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
 
                 PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Spell;
                 PlayerState.GetByPlayerId(target.PlayerId).DeathReason = CustomDeathReason.Spell;
-
-                switch (CurrentSuicideMotion)
-                {
-                    case SuicideMotionOption.Default:
                         killer.RpcMurderPlayer(killer);
                         break;
-                    case SuicideMotionOption.MotionKilled:
-                        target.RpcMurderPlayer(killer);
-                        break;
-                }
-                UtilsGameLog.AddGameLog("Heretic", string.Format(GetString("SheriffMissLog"), UtilsName.GetPlayerColor(target.PlayerId)));
-                break;
             case ModeOption.Eject:
                 info.DoKill = false;
                 break;
@@ -202,6 +190,11 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
         text = GetString("DeathReason.Spell");
         return true;
     }
+    public bool OverrideKillButton(out string text)
+    {
+        text = "Witch_Ability";
+        return true;
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         // seen が省略されたら seer を使う
@@ -218,7 +211,6 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
 
         return "";
     }
-
     public bool DoRevenge(CustomDeathReason deathReason)
     => deathReason == CustomDeathReason.Vote;
 

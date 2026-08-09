@@ -25,7 +25,7 @@ namespace TownOfHost.Roles.AddOns.Common
 
         public static void SetupCustomOption()
         {
-            var spawn = SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.SilverBuzzer, fromtext: UtilsOption.GetFrom(From.TownOfHost_N));
+            var spawn = SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.SilverBuzzer, fromtext: UtilsOption.GetFrom(From.TownOfHost_Pko));
             AddOnsAssignData.Create(Id + 10, CustomRoles.SilverBuzzer, true, true, true, true);
 
             ObjectOptionitem.Create(Id + 20, "AddonOption", true, "", TabGroup.Addons)

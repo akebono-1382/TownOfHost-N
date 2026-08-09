@@ -28,7 +28,7 @@ public sealed class Victim : RoleBase, IKiller, IAdditionalWinner
             tab: TabGroup.Combinations,
             countType: CountTypes.Crew,
             combination: CombinationRoles.AbuserandVictim,
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     enum VictimMode : byte

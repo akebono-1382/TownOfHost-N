@@ -25,7 +25,7 @@ public static class GhostFloodlight
     public static void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.GhostRoles, CustomRoles.GhostFloodlight,
-            fromtext: UtilsOption.GetFrom(From.TownOfHost_N));
+            fromtext: UtilsOption.GetFrom(From.TownOfHost_Pko));
 
         Data = GhostRoleAssingData.Create(
             Id + 1, CustomRoles.GhostFloodlight, CustomRoleTypes.Crewmate);

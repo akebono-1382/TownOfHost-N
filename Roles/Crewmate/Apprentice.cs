@@ -20,7 +20,7 @@ public sealed class Apprentice : RoleBase
             "ap",
             "#c8a46e",
             (5, 5),
-            from: From.TownOfHost_N,
+            from: From.TownOfHost_Pko,
             introSound: () => GetIntroSound(RoleTypes.Crewmate)
         );
 

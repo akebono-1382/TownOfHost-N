@@ -32,7 +32,7 @@ public sealed class Villain : RoleBase, ILNKiller, ISelfVoter
             {
                 AssignCountRule = new(1, 1, 1)
             },
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     private static readonly CustomRoles[] ForbiddenDisguiseRoles =

@@ -445,6 +445,10 @@
 "Meeting","Meeting","会議中"
 "MeetingTarget","Target Selection (During Meeting)","ターゲット指定(会議中)"
 "Eject","Eject","追放時"
+"LoversBreakerNumberAllowedFailures","Number of times the Lovers Breaker can fail","失敗可能回数"
+"Obolus","Obolus","オボルス"
+"ObolusInfo","Last Attack","最後の一撃"
+"ObolusInfoLong","This is a neutral unit with the ability to kill. If you kill the Imposter, you <b>{1}</b>.","キル能力を持つニュートラルです。すべてのプレイヤーを殺すことができます。\nインポスターをキルすると、<b>{1}</b>勝利します。"
 
 "WarlockInfoLong","Pressing the Phantom button will cast a curse on the kill target. \nThe next time you press the Phantom button, the cursed person will kill the person closest to them.","ファントムボタンを押すことでキルターゲットに呪いをかけることができます。\n次にファントムボタンを押すと呪った人が一番近くの人をキルします。"
 "## 役職説明ショート"

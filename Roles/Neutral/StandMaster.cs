@@ -32,7 +32,7 @@ public sealed class StandMaster : RoleBase, ILNKiller, IUsePhantomButton
             {
                 AssignCountRule = new(1, 1, 1)
             },
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     public StandMaster(PlayerControl player)
@@ -478,7 +478,7 @@ public sealed class Stand : RoleBase, ILNKiller
             "#8B4513",
             (6, 4),
             countType: CountTypes.StandMaster,
-            from: From.TownOfHost_N
+            from: From.TownOfHost_Pko
         );
 
     public Stand(PlayerControl player) : base(RoleInfo, player, () => HasTask.ForRecompute)
@@ -580,12 +580,6 @@ public sealed class Stand : RoleBase, ILNKiller
 
         _ = new LateTask(() => UtilsNotifyRoles.NotifyRoles(), 0.2f, "Stand.AddonNotify");
         return true;
-    }
-
-    public float CalculateKillCooldown()
-    {
-        var sm = GetOwner();
-        return sm != null && sm.standSummoned ? sm.currentStayTimer : 999f;
     }
 
     public bool CanUseKillButton()

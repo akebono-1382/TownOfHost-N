@@ -24,7 +24,7 @@ public sealed class Medium : RoleBase
             "sp",
             "#66a6ff",
             (3, 5),
-            from: From.TownOfHost_N,
+            from: From.TownOfHost_Pko,
             introSound: () => GetIntroSound(RoleTypes.Scientist)
         );
 
