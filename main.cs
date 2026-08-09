@@ -439,7 +439,9 @@ namespace TownOfHost
         RuleViolation,
         Martyrdom,
         Burnout,
-        etc = -1
+        Surrender,
+        assassination,
+        etc = -1,
     }
     //WinData
     public enum CustomWinner
@@ -509,6 +511,7 @@ namespace TownOfHost
         Amateras = CustomRoles.Amateras,
         Ruler = CustomRoles.Ruler,
         Obolus = CustomRoles.Obolus,
+        Mario = CustomRoles.Mario,
 
         HASTroll = CustomRoles.HASTroll,
         TaskPlayerB = CustomRoles.TaskPlayerB,

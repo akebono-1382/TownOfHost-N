@@ -41,8 +41,6 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
         KillCooldown = OptionKillCooldown.GetFloat();
         CanVent = OptionCanVent.GetBool();
         CanKill = true;
-        ImpostorKilled = false;
-        KillCount = 1;
     }
 
     public bool ImpostorKilled;
@@ -53,7 +51,6 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
     private static float KillCooldown;
 
     private bool CanKill;
-    private int KillCount;
 
     static OptionItem OptionAddWin;
 
@@ -68,7 +65,7 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 25f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanVent = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanVent, true, false);
-        OptionAddWin = BooleanOptionItem.Create(RoleInfo, 13, OptionName.CountKillerAddWin, true, false);
+        OptionAddWin = BooleanOptionItem.Create(RoleInfo, 13, OptionName.CountKillerAddWin, false, false);
         RoleAddAddons.Create(RoleInfo, 14);
     }
 
@@ -83,23 +80,19 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
         Player.ResetKillCooldown();
         Player.SyncSettings();
 
-        KillCount = 1;
     }
 
-    public int cmd;
 
     private void SendRPC()
     {
         using var sender = CreateSender();
         sender.Writer.Write(ImpostorKilled);
-        sender.Writer.Write(KillCount);
     }
     public override void ReceiveRPC(MessageReader reader)
     {
         var impostorKilled = reader.ReadBoolean();
         var count = reader.ReadInt32();
 
-        KillCount = count;
         ImpostorKilled = impostorKilled;
 
 
@@ -119,18 +112,17 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
     {
         var (killer, target) = info.AttemptTuple;
         if (!Is(killer)) return;
-        if (KillCount <= 0)
+        if (!CanKill)
         {
             info.DoKill = false;
             SendRPC();
-            CanKill = false;
             return;
         }
         else if ((target.GetCustomRole().IsImpostor() || target.GetCustomRole() is CustomRoles.Egoist))
         {
+            CanKill = false;
             info.DoKill = true;
             ImpostorKilled = true;
-            --KillCount;
 
             SendRPC();
 
@@ -138,13 +130,11 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
             {
                 ForceSoloWin();
             }
-
-            CanKill = false;
         }
         else
         {
+            CanKill = false;
             ImpostorKilled = false;
-            --KillCount;
             SendRPC();
         }
     }
@@ -177,8 +167,6 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
             {
                 if (ImpostorKilled)
                 {
-                    Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[0]);
-                    if (PlayerCatch.AllAlivePlayersCount <= 4) Achievements.RpcCompleteAchievement(Player.PlayerId, 0, achievements[1]);
                     return true;
                 }
                 else
@@ -200,8 +188,7 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
     public override void AfterMeetingTasks()
     {
         if (!Player.IsAlive()) return;
-
-        KillCount = 1;
+        CanKill = true;
     }
 
     public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();

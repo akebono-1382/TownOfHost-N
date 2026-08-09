@@ -1096,6 +1096,7 @@ public enum CustomRoles
     HappyJester,
     //TOH-N
     Obolus,
+    Mario,
     //DEBUG only Neutral.
     //HideAndSeek
     HASFox,

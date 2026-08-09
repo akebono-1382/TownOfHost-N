@@ -317,6 +317,11 @@ public sealed class Swooper : RoleBase, IImpostor, IUsePhantomButton
         sender.Writer.Write(durationTimer);
     }
 
+    public override bool OverrideAbilityButton(out string text)
+    {
+        text = "Swooper_ability";
+        return true;
+    }
     public override void ReceiveRPC(MessageReader reader)
     {
         isInvisible = reader.ReadBoolean();
