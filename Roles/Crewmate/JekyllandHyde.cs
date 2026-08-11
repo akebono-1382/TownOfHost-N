@@ -74,7 +74,7 @@ public sealed class JekyllandHyde : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, true, false);
         OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanUseSabotage, false, false);
-        OptionKillMaxniums = FloatOptionItem.Create(RoleInfo, 13, OptionName.HydeKillMaxniums, new(1, 14, 1), 1f, false)
+        OptionKillMaxniums = FloatOptionItem.Create(RoleInfo, 13, OptionName.HydeKillMaxniums, new(1, 14, 1), 1, false)
             .SetValueFormat(OptionFormat.Times);
         HideRoleOptions(CustomRoles.Jekyll);
     }

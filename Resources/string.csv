@@ -448,7 +448,7 @@
 "LoversBreakerNumberAllowedFailures","Number of times the Lovers Breaker can fail","失敗可能回数"
 "HydeKillMaxniums","Number of times the <color=#ff1919>Hyde</color> can kill","<color=#ff1919>ハイド</color>がキルできる回数"
 "Mario","Mario","マリオ"
-"MarioInfo","Let's head into the final stretch and secure the victory!","ベントに入って勝利しよう"
+"MarioInfo","Let's head into the final stretch and secure the victory!","全てを狂わすそのジャンプ"
 "MarioInfoLong","Win by entering the vent the specified number of times.","指定回数ベントに入ると勝利する。"
 "RemoteSheriff","Remote Sheriff","リモートシェリフ"
 "WinventCount","The number of times you need to enter the vent to win","勝利に必要な回数"
