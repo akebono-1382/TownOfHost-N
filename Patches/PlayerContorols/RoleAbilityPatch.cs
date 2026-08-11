@@ -507,7 +507,7 @@ namespace TownOfHost
 
                 //マッドでベント移動できない設定なら矢印を消す
                 if ((!roleClass?.CanVentMoving(__instance, id) ?? false) ||
-                    (SatsumatoImo.UsesMadmateCommonSettings(user) && !Options.MadmateCanMovedByVent.GetBool()))
+                    (JekyllandHyde.UsesMadmateCommonSettings(user) && !Options.MadmateCanMovedByVent.GetBool()))
                 {
                     if (!MadBool && user.PlayerId == PlayerControl.LocalPlayer.PlayerId)
                         MadBool = true;

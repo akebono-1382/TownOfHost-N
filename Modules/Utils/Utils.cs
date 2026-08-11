@@ -154,7 +154,7 @@ namespace TownOfHost
             return check || seer.GetCustomRole() switch
             {
                 // IKillFlashSeeable未適用役職はここに書く
-                _ => (SatsumatoImo.UsesMadmateCommonSettings(seer) && Options.MadmateCanSeeKillFlash.GetBool())
+                _ => (JekyllandHyde.UsesMadmateCommonSettings(seer) && Options.MadmateCanSeeKillFlash.GetBool())
                 || (seer.Is(CustomRoles.Seeing) && (!IsActive(SystemTypes.Comms) || Seeing.OptionCanSeeActiveComms.GetBool()))
             };
         }
@@ -920,7 +920,7 @@ namespace TownOfHost
                 {
                     var roleClass = pc.GetRoleClass();
                     if (roleClass == null) continue;
-                    if (!pc.Is(CustomRoles.SatsumatoImoC) && !pc.Is(CustomRoles.SatsumatoImoM)) continue;
+                    if (!pc.Is(CustomRoles.Jekyll) && !pc.Is(CustomRoles.Hyde)) continue;
                     roleClass.AfterMeetingTasks();
                     roleClass.ChangeColor();
                 }

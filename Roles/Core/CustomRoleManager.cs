@@ -896,6 +896,7 @@ public enum CustomRoles
     //TOH-N
     Survivor,
     Polaris,
+    HydeImp,
     //DEBUG only Impostor
     //Madmate
     MadGuardian,
@@ -946,9 +947,9 @@ public enum CustomRoles
     Sage,
     NiceTrapper,
     Moving,
-    SatsumatoImo,
-    SatsumatoImoC,
-    SatsumatoImoM,
+    JekyllandHyde,
+    Jekyll,
+    Hyde,
     NiceTeleporter,
     NiceRedRidingHood,
     MagicalGirl,
@@ -1011,6 +1012,7 @@ public enum CustomRoles
     Jailer,
     //TOH-N
     //Alchemist,
+    RemoteSheriff,
     //DEBUG only Crewmate
     Analyzer,
     //Neutral

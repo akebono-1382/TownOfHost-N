@@ -7,7 +7,7 @@
 		<Authors>tukasa0001(EmptyBottle), integral0131</Authors>
 		<langVersion>preview</langVersion>
 		<AssemblyName>TownOfHost-N</AssemblyName>
-		<NoWarn>MSB3246,MSB3073,IDE0090</NoWarn>
+		<NoWarn>MSB3246,MSB3073,IDE0090,IDE0017</NoWarn>
 		<AmongUs>C:\Program Files (x86)\Steam\steamapps\common\Among Us tohn</AmongUs>
 	</PropertyGroup>
 

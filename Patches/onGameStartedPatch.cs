@@ -527,8 +527,8 @@ namespace TownOfHost
                 // さつまといもの処理
                 foreach (var state in PlayerState.AllPlayerStates.Values)
                 {
-                    if (state.MainRole != CustomRoles.SatsumatoImo) continue;
-                    state.SetMainRole(rand.Next(0, 2) == 0 ? CustomRoles.SatsumatoImoC : CustomRoles.SatsumatoImoM);
+                    if (state.MainRole != CustomRoles.JekyllandHyde) continue;
+                    state.SetMainRole(rand.Next(0, 2) == 0 ? CustomRoles.Jekyll : CustomRoles.Hyde);
                 }
 
                 foreach (var pair in PlayerState.AllPlayerStates)

@@ -437,7 +437,7 @@ namespace TownOfHost
         Evaporation,
         Retaliation,
         RuleViolation,
-        Martyrdom,
+        Sacrifice,
         Burnout,
         Surrender,
         assassination,

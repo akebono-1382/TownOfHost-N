@@ -258,8 +258,8 @@ public static class GuessManager
     private static bool CheckTargetRoles(PlayerControl target, CustomRoles role)
     {
         if (MagicalGirl.IsMatchedGuess(target, role)) return false;
-        if (role is CustomRoles.SatsumatoImo
-            && target.GetCustomRole() is CustomRoles.SatsumatoImoC or CustomRoles.SatsumatoImoM)
+        if (role is CustomRoles.JekyllandHyde
+            && target.GetCustomRole() is CustomRoles.Jekyll or CustomRoles.Hyde)
         {
             return false;
         }
