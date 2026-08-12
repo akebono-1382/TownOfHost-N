@@ -311,7 +311,7 @@ public sealed class HydeImp : RoleBase, IImpostor, ISchrodingerCatOwner
             "hy",
             "#ff1919",
             (8, 2),
-            from: From.TOR_GM_Haoming_Edition,
+            from: From.NebulaontheShip,
             countType: CountTypes.Impostor,
             assignInfo: new RoleAssignInfo(CustomRoles.HydeImp, CustomRoleTypes.Impostor)
             {
