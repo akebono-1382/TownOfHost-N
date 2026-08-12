@@ -77,6 +77,8 @@ public sealed class JekyllandHyde : RoleBase
         OptionKillMaxniums = FloatOptionItem.Create(RoleInfo, 13, OptionName.HydeKillMaxniums, new(1, 14, 1), 1, false)
             .SetValueFormat(OptionFormat.Times);
         HideRoleOptions(CustomRoles.Jekyll);
+        HideRoleOptions(CustomRoles.Hyde);
+        HideRoleOptions(CustomRoles.HydeImp);
     }
 
     enum OptionName
@@ -248,7 +250,7 @@ public sealed class Hyde : RoleBase, IKiller, ISchrodingerCatOwner
 
     static void SetupOptionItem()
     {
-
+        JekyllandHyde.HideRoleOptions(CustomRoles.Hyde);
     }
     public float CalculateKillCooldown() => KillCooldown;
     public bool CanUseSabotageButton() => CanUseSabotage;
@@ -331,7 +333,7 @@ public sealed class HydeImp : RoleBase, IImpostor, ISchrodingerCatOwner
 
     static void SetupOptionItem()
     {
-
+        JekyllandHyde.HideRoleOptions(CustomRoles.HydeImp);
     }
     public float CalculateKillCooldown() => KillCooldown;
     public bool CanUseSabotageButton() => true;
