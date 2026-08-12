@@ -697,6 +697,7 @@ namespace TownOfHost
                             CountTypes.Crew => GetRoleColorAndtext(CustomRoles.Crewmate),
                             CountTypes.Remotekiller => GetRoleColorAndtext(CustomRoles.Remotekiller),
                             CountTypes.Fox => GetRoleColorAndtext(CustomRoles.Fox),
+                            CountTypes.Hunter => GetRoleColorAndtext(CustomRoles.Hunter),
                             CountTypes.MilkyWay => Roles.Neutral.Vega.TeamText,
                             _ => "...?",
                         };

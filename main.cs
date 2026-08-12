@@ -512,6 +512,7 @@ namespace TownOfHost
         Ruler = CustomRoles.Ruler,
         Obolus = CustomRoles.Obolus,
         Mario = CustomRoles.Mario,
+        Hunter = CustomRoles.Hunter,
 
         HASTroll = CustomRoles.HASTroll,
         TaskPlayerB = CustomRoles.TaskPlayerB,

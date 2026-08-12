@@ -22,10 +22,10 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
             "#ba841e",
             (2, 0),
             true,
-            assignInfo: new RoleAssignInfo(CustomRoles.Obolus, CustomRoleTypes.Neutral)
+            /*assignInfo: new RoleAssignInfo(CustomRoles.Obolus, CustomRoleTypes.Neutral)
             {
                 AssignCountRule = new(1, 1, 1)
-            },
+            },*/
             Desc: () =>
             {
                 return string.Format(GetString("ObolusDesc"),OptionAddWin.GetBool() ? GetString("AddWin") : GetString("SoloWin"));

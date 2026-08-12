@@ -1099,6 +1099,7 @@ public enum CustomRoles
     //TOH-N
     Obolus,
     Mario,
+    Hunter,
     //DEBUG only Neutral.
     //HideAndSeek
     HASFox,
