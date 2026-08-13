@@ -148,7 +148,7 @@ public static class RoleGuideButtonPatch
 
             var btnObj = new GameObject("RoleGuideButton");
             btnObj.transform.SetParent(hud.transform);
-            btnObj.layer = 5;
+            btnObj.layer = -5;
 
             var chatButton = hud.Chat?.chatButton;
             if (chatButton != null && ShouldShowTopRightChatButton())

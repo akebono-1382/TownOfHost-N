@@ -249,7 +249,7 @@ namespace TownOfHost
             CancelAutoCreateGame();
             __instance.PlayOnlineButton.OnClick.AddListener((Action)RequestAutoCreateGame);
             __instance.ResetScreen();
-            HideOnlineJoinControls(__instance);
+            //HideOnlineJoinControls(__instance);
 
             // フリープレイの無効化
             var howToPlayButton = __instance.howToPlayButton;
@@ -281,18 +281,6 @@ namespace TownOfHost
             freeplayButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => CustomSpawnEditor.ActiveEditMode = false));//ボタンを生成
 #endif
         }
-
-        private static void HideOnlineJoinControls(MainMenuManager mainMenu)
-        {
-            var scaler = mainMenu.transform.Find(OnlineButtonScalerPath);
-            if (scaler == null) return;
-
-            scaler.Find("Enter Code Button")?.gameObject.SetActive(false);
-            scaler.Find("Find Game Button")?.gameObject.SetActive(false);
-            scaler.Find("Line")?.gameObject.SetActive(false);
-            scaler.Find("Create Lobby Button")?.gameObject.SetActive(false);
-        }
-
         /// <summary>TOHロゴの子としてボタンを生成</summary>
         /// <param name="name">オブジェクト名</param>
         /// <param name="normalColor">普段のボタンの色</param>
@@ -326,7 +314,7 @@ namespace TownOfHost
             return !(VersionInfoManager.version == null || VersionInfoManager.allversion.DisableMM
             || (VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableMM));
         }
-        [HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
+        /*[HarmonyPatch(nameof(MainMenuManager.OpenEnterCodeMenu))]
         [HarmonyPrefix]
         public static bool ClickOpenEnterCodeMenu()
         {
@@ -339,7 +327,7 @@ namespace TownOfHost
         public static void OpenOnlineMenuPostfix(MainMenuManager __instance)
         {
             _ = new LateTask(() => BeginAutoCreateGame(__instance), AutoCreateGamePollInterval, "Begin Auto Create Game", true);
-        }
+        }*/
 
         private static void RequestAutoCreateGame()
         {
@@ -353,7 +341,7 @@ namespace TownOfHost
             autoCreateGameRequestId++;
         }
 
-        private static void BeginAutoCreateGame(MainMenuManager mainMenu)
+        /*private static void BeginAutoCreateGame(MainMenuManager mainMenu)
         {
             if (!autoCreateGameRequested)
             {
@@ -405,7 +393,7 @@ namespace TownOfHost
             __instance.createGameScreen?.gameObject?.SetActive(false);
             __instance.ResetScreen();
             return false;
-        }
+        }*/
         // プレイメニュー，アカウントメニュー，クレジット画面が開かれたらロゴとボタンを消す
         [HarmonyPatch(nameof(MainMenuManager.OpenGameModeMenu))]
         [HarmonyPatch(nameof(MainMenuManager.OpenAccountMenu))]
@@ -419,7 +407,7 @@ namespace TownOfHost
             var onlineButtonScaler = __instance.transform.Find(OnlineButtonScalerPath);
             var Findbuttongo = onlineButtonScaler?.Find("Find Game Button")?.gameObject;
 
-            var codebuttongo = onlineButtonScaler?.Find("Enter Code Button")?.gameObject;
+            /*var codebuttongo = onlineButtonScaler?.Find("Enter Code Button")?.gameObject;
             var Codebutton = codebuttongo?.GetComponent<PassiveButton>();
 
             var createbuttongameobject = onlineButtonScaler?.Find("Create Lobby Button")?.gameObject;
@@ -427,19 +415,19 @@ namespace TownOfHost
 
             var version = VersionInfoManager.version;
             var allVersion = VersionInfoManager.allversion;
-
+            */
             if (Findbuttongo)
             {
-                // var disable = version == null || version.DisableMM || (allVersion != null && allVersion.DisableMM);
-                //Findbuttongo.SetActive(!disable);
+                var disable = /*version == null || version.DisableMM || (allVersion != null && allVersion.DisableMM)*/true;
+                Findbuttongo.SetActive(!disable);
                 Findbuttongo.SetActive(false);
             }
-            if (Codebutton && ((VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true) ||
+            /*if (Codebutton && ((VersionInfoManager.version != null && VersionInfoManager.version.DisableRoomJoin == true) ||
             VersionInfoManager.allversion != null && VersionInfoManager.allversion.DisableRoomJoin == true))
             {
                 var buttonCollider = Codebutton.GetComponent<BoxCollider2D>();
                 buttonCollider.offset = new(100f, 100f);
-            }
+            }*/
             if (Main.IsAndroid())
             {
                 //    createbutton.GetComponent<BoxCollider2D>().offset = new(100f, 100);
@@ -458,7 +446,7 @@ namespace TownOfHost
             if (Statistics_ScrollStuff?.gameObject != null)
                 Statistics_ScrollStuff?.gameObject.SetActive(false);
 
-            var warning = onlineButtonScaler?.parent?.Find("CrossplayWarning")?.gameObject;
+            /*var warning = onlineButtonScaler?.parent?.Find("CrossplayWarning")?.gameObject;
             var TMP = warning?.transform.Find("CrossPlayText/Text_TMP")?.GetComponent<TextMeshPro>();
             if (warning != null && TMP != null)
             {
@@ -471,7 +459,7 @@ namespace TownOfHost
                 if (text == "") warning.SetActive(false);
             }
             OptionsMenuBehaviourStartPatch.Instance = null;
-            HideOnlineJoinControls(__instance);
+            HideOnlineJoinControls(__instance);*/
         }
         [HarmonyPatch(nameof(MainMenuManager.ResetScreen)), HarmonyPostfix]
         public static void ResetScreenPostfix(MainMenuManager __instance)
@@ -498,7 +486,7 @@ namespace TownOfHost
                 if (ejectButton != null && ejectButton.gameObject != null)
                     ejectButton.gameObject.SetActive(true);
             }, 0.5f, "ShowButton", true);
-            HideOnlineJoinControls(__instance);
+            //HideOnlineJoinControls(__instance);
         }
         public static void DestroyButton()
         {

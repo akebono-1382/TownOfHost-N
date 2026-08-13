@@ -55,7 +55,7 @@ public sealed class JekyllandHyde : RoleBase
             34800,
             SetupOptionItem,
             "jah",
-            "#8cffff",
+            "#ffffff",
             (4, 2),
             from: From.NebulaontheShip,
                         countType: CountTypes.Crew,

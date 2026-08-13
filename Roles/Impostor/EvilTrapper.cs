@@ -1,12 +1,18 @@
+/*
 using System.Collections.Generic;
 using System.Linq;
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppSystem.Runtime.InteropServices;
+using MS.Internal.Xml.XPath;
 using TownOfHost.Modules;
 using TownOfHost.Patches;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using UnityEngine;
+using UnityEngineInternal;
+using static Il2CppSystem.Globalization.CultureInfo;
+using static UnityEngine.UI.GridLayoutGroup;
 
 namespace TownOfHost.Roles.Impostor;
 
@@ -54,13 +60,15 @@ public sealed class EvilTrapper : RoleBase, IImpostor, IUsePhantomButton
     static OptionItem OptionEffectDuration;
     static OptionItem OptionSpeedBoost;
     static OptionItem OptionSpeedDown;
-
+    
     static int MaxTraps;
     static float PlaceCooldown;
     static float TrapRange;
     static float EffectDuration;
     static float SpeedBoost;
     static float SpeedDown;
+
+    static bool showing;
 
     enum OptionName
     {
@@ -101,7 +109,7 @@ public sealed class EvilTrapper : RoleBase, IImpostor, IUsePhantomButton
     int placedCount;
     float cooldownTimer;
 
-     EvilTrapperTrapType currentTrapType;
+    EvilTrapperTrapType currentTrapType;
     float trapTypeTimer;
 
     readonly Dictionary<byte, float> effectTimers = new();
@@ -177,7 +185,7 @@ public sealed class EvilTrapper : RoleBase, IImpostor, IUsePhantomButton
             Type = currentTrapType,
             Active = false,
             Position = pos,
-            Obj = new TrapNetObject(pos, currentTrapType, Player, activated: false)
+            Obj = new TrapNetObject(pos, currentTrapType, Player, activated: false, breaked: false)
         };
         traps.Add(data);
 
@@ -270,23 +278,10 @@ public sealed class EvilTrapper : RoleBase, IImpostor, IUsePhantomButton
 
     void NotifyTrapper(TrapData trap, PlayerControl target)
     {
-        var targetPos = trap.Position;
-        int colorId = target.Data.DefaultOutfit.ColorId;
-        string colorCode = "#ffffff";
-        if (colorId >= 0 && colorId < Palette.PlayerColors.Length)
-            colorCode = "#" + ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[colorId]);
-
-        GetArrow.Add(Player.PlayerId, targetPos);
-        var arrowData = (targetPos, colorCode);
-        activeNotifyArrows.Add(arrowData);
-        UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: Player);
-
-        _ = new LateTask(() =>
-        {
-            GetArrow.Remove(Player.PlayerId, targetPos);
-            activeNotifyArrows.Remove(arrowData);
-            UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: Player);
-        }, 3f, "EvilTrapper.RemoveArrow", true);
+        PlayerState.GetByPlayerId(target.PlayerId).DeathReason = CustomDeathReason.Spell;
+        target.RpcMurderPlayer(target);
+        traps.Remove(trap);
+        trap.Obj = new TrapNetObject(trap.Position, trap.Type, Player, activated: true, breaked: true);
     }
 
     public override void OnStartMeeting()
@@ -308,12 +303,13 @@ public sealed class EvilTrapper : RoleBase, IImpostor, IUsePhantomButton
             var type = trap.Type;
             int idx = i;
             var old = trap.Obj;
+            bool breaked = trap.Obj.breaked_;
 
             _ = new LateTask(() =>
             {
                 try { old?.Despawn(); } catch { }
                 trap.Active = true;
-                trap.Obj = new TrapNetObject(pos, type, Player, activated: true);
+                trap.Obj = new TrapNetObject(pos, type, Player, activated: true, breaked);
             }, idx * 0.6f + 1.0f, $"EvilTrapper.Activate.{idx}", true);
         }
 
@@ -409,17 +405,20 @@ public sealed class TrapNetObject : CustomNetObject
     readonly PlayerControl _owner;
     readonly Vector2 _pos;
     readonly bool _activated;
+    readonly bool _breaked;
+    internal bool breaked_;
 
     public TrapNetObject(Vector2 position, EvilTrapperTrapType type,
-        PlayerControl owner, bool activated)
+        PlayerControl owner, bool activated, bool breaked)
     {
         _type = type;
         _owner = owner;
         _pos = position;
         _activated = activated;
+        _breaked = breaked;
+        breaked_ = _breaked;
         CreateNetObject(position);
     }
-
     protected override void OnCreated()
     {
         if (PlayerControl == null) return;
@@ -449,7 +448,21 @@ public sealed class TrapNetObject : CustomNetObject
             if (capturedPC != null) capturedPC.RawSetColor((byte)trapColor);
         }, 0.15f, "EvilTrapper.ApplyColor", true);
 
-        bool showAll = _activated && _type != EvilTrapperTrapType.Notify;
+        bool showAll = true;
+        if (_type != EvilTrapperTrapType.Notify)
+        {
+            if (!_activated)
+            {
+                showAll = false;
+            }
+        }
+        if (_type == EvilTrapperTrapType.Notify)
+        {
+            if (!_activated && !_breaked)
+            {
+                showAll = false;
+            }
+        }
         if (!showAll)
         {
             foreach (var pc in PlayerCatch.AllPlayerControls)
@@ -459,7 +472,9 @@ public sealed class TrapNetObject : CustomNetObject
                     Hide(pc);
             }
         }
+
     }
 
     public override void OnMeeting() { }
 }
+*/

@@ -33,7 +33,7 @@ namespace TownOfHost
         // modの色 / Mod Color (Default: #00bfff)
         public static readonly string ModColor = "#6a5acd";
         // 公開ルームを許可する / Allow Public Room (Default: true)
-        public static readonly bool AllowPublicRoom = true;
+        public static readonly bool AllowPublicRoom = false;
         // フォークID / ForkId (Default: OriginalTOH)
         public static readonly string ForkId = "TOH-N";
         // Discordボタンを表示するか / Show Discord Button (Default: true)
@@ -66,12 +66,12 @@ namespace TownOfHost
         public const string ModVersion = ".0.0";//リリースver用バージョン変更dc9b79
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
-        public static bool DebugVersion = false;
+        public static bool DebugVersion = true;
 
         // サポートされている最低のAmongUsバージョン(Readmeも変える)
         public static readonly string LowestSupportedVersion = "2026.3.31";
         // このバージョンのみで公開ルームを無効にする場合
-        public static readonly bool IsPublicAvailableOnThisVersion = false;
+        public static readonly bool IsPublicAvailableOnThisVersion = true;
         public Harmony Harmony { get; } = new Harmony(PluginGuid);
         public static Version version = Version.Parse(PluginVersion);
         public static BepInEx.Logging.ManualLogSource Logger;

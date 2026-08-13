@@ -770,7 +770,7 @@ namespace TownOfHost
             CustomRoles[] GuardLv1 = [CustomRoles.GuardMaster, CustomRoles.Guarding, CustomRoles.OneWolf, CustomRoles.VentOpener];
             CustomRoles[] killLv2 = [CustomRoles.Ballooner, CustomRoles.FireWorks, CustomRoles.Warlock, CustomRoles.GrimReaper];
             CustomRoles[] GuardLv2 = [CustomRoles.Fox, CustomRoles.MadGuardian];
-            CustomRoles[] KillLv3 = [CustomRoles.Jumper];
+            CustomRoles[] KillLv3 = [CustomRoles.Jumper, CustomRoles.Hunter];
             CustomRoles[] GuardLv9 = [CustomRoles.King, CustomRoles.Autocrat];
             CustomRoles[] KillLv10 = [CustomRoles.ConnectSaver, CustomRoles.Shyboy, CustomRoles.Limiter, CustomRoles.EarnestWolf, CustomRoles.CurseMaker];
 

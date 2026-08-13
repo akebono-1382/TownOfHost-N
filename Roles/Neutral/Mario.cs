@@ -109,7 +109,7 @@ public sealed class Mario : RoleBase, IAdditionalWinner
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        foreach (var otherPlayer in PlayerCatch.AllAlivePlayerControls)
+        /*foreach (var otherPlayer in PlayerCatch.AllAlivePlayerControls)
         {
             // テロリストは除外(テロリスト勝利防止)
             if (otherPlayer.Is(CustomRoles.Terrorist))
@@ -128,7 +128,7 @@ public sealed class Mario : RoleBase, IAdditionalWinner
             var playerState = PlayerState.GetByPlayerId(otherPlayer.PlayerId);
             playerState.DeathReason = CustomDeathReason.Bombed;
             playerState.SetDead();
-        }
+        }*/
 
         if (!Wined)
         {
@@ -141,7 +141,6 @@ public sealed class Mario : RoleBase, IAdditionalWinner
     }
     public bool CheckWin(ref CustomRoles winnerRole)
     {
-        // 追加勝利モードのときは勝者役職を返す（IAdditionalWinner 呼び出し元が使います）
         if (!Player.IsAlive()) return false;
         if (!CanWin) return false;
 
@@ -150,8 +149,6 @@ public sealed class Mario : RoleBase, IAdditionalWinner
             winnerRole = CustomRoles.Mario;
             return true;
         }
-
-        // 単独勝利モードならホスト側で既に ForceSoloWin を実行しているのでここでは false を返す
         return false;
     }
 
