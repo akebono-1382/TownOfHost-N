@@ -3,6 +3,7 @@ using Hazel;
 using TownOfHost.Patches;
 using TownOfHost.Roles.Core;
 using UnityEngine;
+using static Il2CppSystem.Threading.SemaphoreSlim;
 
 namespace TownOfHost.Roles.Crewmate;
 
@@ -37,12 +38,12 @@ public sealed class ToiletFan : RoleBase
         Cooldown = OptionCooldown.GetFloat();
         flug = 0;
         IsDead = false;
-        PetActionManager.Register(Player.PlayerId, OnPet);
-        cooldownLeft = 0f;
+       // PetActionManager.Register(Player.PlayerId, OnPet);
+        cooldownLeft = Cooldown;
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
-        AURoleOptions.EngineerCooldown = cooldownLeft > 0f ? cooldownLeft : Cooldown;
+        AURoleOptions.EngineerCooldown = Cooldown;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
     float cooldownLeft;
@@ -72,10 +73,10 @@ public sealed class ToiletFan : RoleBase
         ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 80);
         ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 81);
         ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 82);
-        cooldownLeft = Cooldown;
+        //cooldownLeft = Cooldown;
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    /*public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (!Player.IsAlive()) return;
@@ -106,7 +107,7 @@ public sealed class ToiletFan : RoleBase
     public override void OnDestroy()
     {
         PetActionManager.Unregister(Player.PlayerId);
-    }
+    }*/
     public override string GetAbilityButtonText() => GetString("ToiletFanAbility");
     public override bool OverrideAbilityButton(out string text)
     {
@@ -141,7 +142,7 @@ public sealed class ToiletFan : RoleBase
             ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Doors, 82);
         }
     }
-    void SendRpc()
+    /*void SendRpc()
     {
         using var sender = CreateSender();
         sender.Writer.Write(cooldownLeft);
@@ -151,6 +152,11 @@ public sealed class ToiletFan : RoleBase
     {
         cooldownLeft = reader.ReadSingle();
     }
+    public override string GetProgressText(bool comms = false, bool gamelog = false)
+    {
+        var progress = Utils.ColorString(cooldownLeft == 0f ? Color.green : Color.gray, $"({cooldownLeft})");
+        return progress;
+    }*/
     public static System.Collections.Generic.Dictionary<int, Achievement> achievements = new();
     [Attributes.PluginModuleInitializer]
     public static void Load()

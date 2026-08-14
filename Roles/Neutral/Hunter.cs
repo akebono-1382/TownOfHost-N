@@ -31,6 +31,7 @@ namespace TownOfHost.Roles.Neutral
                     "#cd853f",
                     (1, 5),
                     true,
+                    introSound: () => GetIntroSound(RoleTypes.Shapeshifter),
                      assignInfo: new RoleAssignInfo(CustomRoles.Hunter, CustomRoleTypes.Neutral)
                     {
                         AssignCountRule = new(1, 1, 1)

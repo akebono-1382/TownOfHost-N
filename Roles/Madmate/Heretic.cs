@@ -1,4 +1,4 @@
-using System.Linq;
+/*using System.Linq;
 using AmongUs.GameOptions;
 using TownOfHost.Modules;
 using TownOfHost.Modules.ChatManager;
@@ -407,3 +407,4 @@ public sealed class Heretic : RoleBase, IKiller, IKillFlashSeeable, IDeathReason
         }
     }
 }
+*/

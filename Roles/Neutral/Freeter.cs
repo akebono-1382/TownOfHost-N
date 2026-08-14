@@ -24,6 +24,7 @@ public sealed class Freeter : RoleBase, IKiller, IAdditionalWinner
             "tt",
             "#32cd32",
             (6, 2),
+            introSound: () => GetIntroSound(RoleTypes.Shapeshifter),
             from: From.SuperNewRoles,
             isDesyncImpostor: true
         );
