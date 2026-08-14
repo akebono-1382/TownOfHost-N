@@ -455,7 +455,7 @@ namespace TownOfHost
                 && Pavlov == 0 && FoxAndCrew <= Hunter) //狩人勝利
             {
                 reason = GameOverReason.ImpostorsByKill;
-                CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.HunterWIn, byte.MaxValue);
+                CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Hunter, byte.MaxValue);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Hunter);
             }
             else if (Jackal == 0 && Remotekiller == 0 && MadBetrayer == 0

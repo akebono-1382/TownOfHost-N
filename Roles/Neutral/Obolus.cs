@@ -60,9 +60,9 @@ public sealed class Obolus : RoleBase, ILNKiller, IAdditionalWinner
     }
     private static void SetupOptionItem()
     {
-        SoloWinOption.Create(RoleInfo, 9, defo: 50);
+        SoloWinOption.Create(RoleInfo, 10, show: () => !OptionAddWin.GetBool(), defo: 50);
 
-        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 25f, false)
+        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 25f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanVent = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanVent, true, false);
         OptionAddWin = BooleanOptionItem.Create(RoleInfo, 13, OptionName.CountKillerAddWin, false, false);

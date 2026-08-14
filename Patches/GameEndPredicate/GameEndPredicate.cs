@@ -128,7 +128,7 @@ public abstract class GameEndPredicate
                 CountTypes.Monika => CustomWinner.Monika,
                 CountTypes.StandMaster => CustomWinner.StandMaster,
                 CountTypes.Villain => CustomWinner.Villain,
-                CountTypes.Hunter => CustomWinner.HunterWIn,
+                CountTypes.Hunter => CustomWinner.Hunter,
                 _ => (CustomWinner)role,
             };
             isFactionMember = countType is CountTypes.OutOfGame or CountTypes.None or CountTypes.Crew

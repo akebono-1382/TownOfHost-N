@@ -1,3 +1,4 @@
+/*
 using AmongUs.GameOptions;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
@@ -92,4 +93,4 @@ public sealed class HappyJester : RoleBase, IKiller
 
         DecidedWinner = true;
     }
-}
+}*/
