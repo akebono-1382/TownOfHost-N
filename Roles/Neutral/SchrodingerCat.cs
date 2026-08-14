@@ -15,20 +15,21 @@ using static TownOfHost.Roles.Core.Interfaces.ISchrodingerCatOwner;
 namespace TownOfHost.Roles.Neutral;
 
 // マッドが属性化したらマッド状態時の特別扱いを削除する
-public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSeeable, IKillFlashSeeable
+public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSeeable, IKillFlashSeeable, IKiller, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
             typeof(SchrodingerCat),
             player => new SchrodingerCat(player),
             CustomRoles.SchrodingerCat,
-            () => RoleTypes.Crewmate,
+            () => OptionHasKillButton.GetBool() ? RoleTypes.Impostor : RoleTypes.Crewmate,
             CustomRoleTypes.Neutral,
             54100,
             SetupOptionItem,
             "sc",
             "#696969",
             (7, 2),
+            countType: CountTypes.Crew,
             introSound: () => GetIntroSound(RoleTypes.Impostor),
             from: From.TOR_GM_Haoming_Edition
         );
@@ -41,20 +42,43 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         CanWinTheCrewmateBeforeChange = OptionCanWinTheCrewmateBeforeChange.GetBool();
         ChangeTeamWhenExile = OptionChangeTeamWhenExile.GetBool();
         CanSeeKillableTeammate = OptionCanSeeKillableTeammate.GetBool();
+        HasKillbutton = OptionHasKillButton.GetBool();
     }
     static OptionItem OptionCanWinTheCrewmateBeforeChange;
     static OptionItem OptionChangeTeamWhenExile;
+    public bool CanKill;
+    private static OptionItem OptionKillCooldown;
+    public static OptionItem OptionCanVent;
+    public static OptionItem OptionCanUseSabotage;
+    public static OptionItem OptionHasImpostorVision;
+    public static OptionItem OptionDieKiller;
+    public static OptionItem OptionDieKillerTIme;
+    static OptionItem OptionShowRoleNameToKiller;
+    static OptionItem OptionShowRoleNameToKillerTeam;
+    static OptionItem OptionCountChenge;
     static OptionItem OptionCanSeeKillableTeammate;
-
+    static OptionItem OptionHasKillButton;
+    PlayerControl Killer;
+    byte KillerId = byte.MaxValue;
+    readonly HashSet<byte> RoleNameSeerIds = [];
+    static bool KillerisCat;
+    public TeamType SchrodingerCatChangeTo => Team;
     enum OptionName
     {
+        OpportunistHasKillButton,
         CanBeforeSchrodingerCatWinTheCrewmate,
         SchrodingerCatExiledTeamChanges,
         SchrodingerCatCanSeeKillableTeammate,
+        BakeCatDieKiller,
+        BakeCatDieKillerTime,
+        BakeCatShowRoleNameToKiller,
+        BakeCatShowRoleNameToKillerTeam,
+        BakeCatCountChenge
     }
     static bool CanWinTheCrewmateBeforeChange;
     static bool ChangeTeamWhenExile;
     static bool CanSeeKillableTeammate;
+    static bool HasKillbutton;
 
     /// <summary>
     /// 自分をキルしてきた人のロール
@@ -80,9 +104,20 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
 
     public static void SetupOptionItem()
     {
-        OptionCanWinTheCrewmateBeforeChange = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanBeforeSchrodingerCatWinTheCrewmate, false, false);
-        OptionChangeTeamWhenExile = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SchrodingerCatExiledTeamChanges, false, false);
-        OptionCanSeeKillableTeammate = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SchrodingerCatCanSeeKillableTeammate, false, false);
+        OptionHasKillButton = BooleanOptionItem.Create(RoleInfo, 10, OptionName.OpportunistHasKillButton, false, false);
+        OptionCanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, true, false, OptionHasKillButton);
+        OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanUseSabotage, false, false, OptionHasKillButton);
+        OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 13, GeneralOption.ImpostorVision, true, false, OptionHasKillButton);
+        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 14, GeneralOption.KillCooldown, new(0f, 180f, 0.5f), 30f, false, OptionHasKillButton)
+            .SetValueFormat(OptionFormat.Seconds);
+        OptionCountChenge = BooleanOptionItem.Create(RoleInfo, 15, OptionName.BakeCatCountChenge, false, false, OptionHasKillButton);
+        OptionShowRoleNameToKiller = BooleanOptionItem.Create(RoleInfo, 16, OptionName.BakeCatShowRoleNameToKiller, true, false, OptionHasKillButton);
+        OptionDieKiller = BooleanOptionItem.Create(RoleInfo, 17, OptionName.BakeCatDieKiller, true, false);
+        OptionDieKillerTIme = FloatOptionItem.Create(RoleInfo, 18, OptionName.BakeCatDieKillerTime, new(0, 180, 1), 1, false, OptionDieKiller).SetValueFormat(OptionFormat.Seconds);
+        OptionShowRoleNameToKillerTeam = BooleanOptionItem.Create(RoleInfo, 19, OptionName.BakeCatShowRoleNameToKillerTeam, false, false, OptionShowRoleNameToKiller);
+        OptionCanWinTheCrewmateBeforeChange = BooleanOptionItem.Create(RoleInfo, 20, OptionName.CanBeforeSchrodingerCatWinTheCrewmate, false, false);
+        OptionChangeTeamWhenExile = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SchrodingerCatExiledTeamChanges, false, false);
+        OptionCanSeeKillableTeammate = BooleanOptionItem.Create(RoleInfo, 22, OptionName.SchrodingerCatCanSeeKillableTeammate, false, false);
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -94,6 +129,16 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     public static void ApplyMadCatOptions(IGameOptions opt)
     {
         opt.SetVision(true);
+    }
+    void IKiller.OnCheckMurderAsKiller(MurderInfo info)
+    {
+        if (info.AttemptKiller.PlayerId == Player.PlayerId) return;
+
+        // 親分はキル出来ないようにする
+        if (info.AttemptTarget.PlayerId == (Killer?.PlayerId ?? byte.MaxValue) && !KillerisCat)
+        {
+            info.DoKill = false;
+        }
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
@@ -109,11 +154,19 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         }
         else
             if (Team == TeamType.None)
+        {
+            info.CanKill = false;
+            ChangeTeamOnKill(killer);
+            if (Killer.Is(CustomRoles.SchrodingerCat) || Killer.Is(CustomRoles.BakeCat))
             {
-                info.CanKill = false;
-                ChangeTeamOnKill(killer);
-                return false;
+                KillerisCat = true;
             }
+            else
+            {
+                KillerisCat = false;
+            }
+            return false;
+        }
         return true;
     }
     /// <summary>
@@ -121,22 +174,167 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     /// </summary>
     public void ChangeTeamOnKill(PlayerControl killer)
     {
-        killer.RpcProtectedMurderPlayer(Player);
-        if (MagicalGirl.TryGetEffectiveRole<ISchrodingerCatOwner>(killer, out var catOwner))
+        if (!HasKillbutton)
         {
-            catOwner.OnSchrodingerCatKill(this);
-            RpcSetTeam(catOwner.SchrodingerCatChangeTo);
-            owner = catOwner;
+            killer.RpcProtectedMurderPlayer(Player);
+            if (MagicalGirl.TryGetEffectiveRole<ISchrodingerCatOwner>(killer, out var catOwner))
+            {
+                catOwner.OnSchrodingerCatKill(this);
+                RpcSetTeam(catOwner.SchrodingerCatChangeTo);
+                owner = catOwner;
+            }
+            else
+            {
+                logger.Warn($"未知のキル役職からのキル: {killer.GetNameWithRole().RemoveHtmlTags()}");
+            }
+
+            RevealNameColors(killer);
+
+            UtilsNotifyRoles.NotifyRoles();
+            UtilsOption.MarkEveryoneDirtySettings();
         }
         else
         {
-            logger.Warn($"未知のキル役職からのキル: {killer.GetNameWithRole().RemoveHtmlTags()}");
+            killer.RpcProtectedMurderPlayer(Player);
+            Killer = killer;
+            if (MagicalGirl.TryGetEffectiveRole<ISchrodingerCatOwner>(killer, out var catOwner))
+            {
+                catOwner.OnSchrodingerCatKill(this);
+                var newTeam = (TeamType)catOwner.SchrodingerCatChangeTo;
+                SetRoleNameSeers(killer, newTeam);
+                RpcSetTeam(newTeam);
+                owner = catOwner;
+
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    Player.RpcSetRoleDesync(RoleTypes.Impostor, Player.GetClientId());
+                    foreach (var pc in PlayerCatch.AllPlayerControls)
+                    {
+                        if (pc == PlayerControl.LocalPlayer)
+                        {
+                            Player.RpcSetRoleDesync(Player.IsAlive() ? RoleTypes.Crewmate : RoleTypes.CrewmateGhost, Player.GetClientId());
+                            if (Player != pc) pc.RpcSetRoleDesync(pc.IsAlive() ? RoleTypes.Scientist : RoleTypes.CrewmateGhost, Player.GetClientId());
+                        }
+                        else
+                        {
+                            Player.RpcSetRoleDesync(pc == Player ? (Player.IsAlive() ? RoleTypes.Impostor : RoleTypes.ImpostorGhost) : (Player.IsAlive() ? RoleTypes.Crewmate : RoleTypes.CrewmateGhost), pc.GetClientId());
+                            if (Player != pc) pc.RpcSetRoleDesync(pc.IsAlive() ? RoleTypes.Scientist : RoleTypes.CrewmateGhost, Player.GetClientId());
+                        }
+                    }
+                }
+                _ = new LateTask(() =>
+                {
+                    Player.SetKillCooldown(OptionKillCooldown.GetFloat(), force: true);
+                    CanKill = true;
+                    if (!Utils.RoleSendList.Contains(Player.PlayerId)) Utils.RoleSendList.Add(Player.PlayerId);
+
+                    if (OptionCountChenge.GetBool())
+                    {
+                        MyState.SetCountType(killer.GetCustomRole().GetRoleInfo()?.CountType ?? CountTypes.Crew);
+                        if (OptionDieKiller.GetBool())//死ぬならカウントが増えないようにキラーのカウントをクルーにしてやる
+                            PlayerState.GetByPlayerId(killer.PlayerId).SetCountType(CountTypes.Crew);
+                    }
+                }, 0.3f, "ResetKillCooldown");
+                if (OptionDieKiller.GetBool())
+                    _ = new LateTask(() =>
+                    {
+                        if (!killer.IsAlive() || GameStates.CalledMeeting) return;
+                        killer.RpcMurderPlayerV2(killer);
+                    }, OptionDieKillerTIme.GetFloat(), "BakeCatKillerDie");
+            }
+            else
+            {
+                logger.Warn($"未知のキル役職からのキル: {killer.GetNameWithRole().RemoveHtmlTags()}");
+                return;
+            }
+
+            RevealNameColors(killer);
+
+            UtilsNotifyRoles.NotifyRoles(ForceLoop: true);
+            UtilsOption.MarkEveryoneDirtySettings();
+
+            if (PlayerControl.LocalPlayer.PlayerId == Player.PlayerId)
+            {
+                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+            }
+        }
+    }
+    public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo sitai)
+    {
+        if (OptionDieKiller.GetBool() && HasKillbutton)
+        {
+            if (Killer?.IsAlive() is not true) return;
+            Killer.RpcMurderPlayerV2(Killer);
+        }
+    }
+    private void SetRoleNameSeers(PlayerControl killer, TeamType team)
+    {
+        if (!HasKillbutton) return;
+        RoleNameSeerIds.Clear();
+        KillerId = killer?.PlayerId ?? byte.MaxValue;
+
+        if (!OptionShowRoleNameToKiller.GetBool() || killer == null)
+        {
+            return;
         }
 
-        RevealNameColors(killer);
+        RoleNameSeerIds.Add(killer.PlayerId);
 
-        UtilsNotifyRoles.NotifyRoles();
-        UtilsOption.MarkEveryoneDirtySettings();
+        if (!OptionShowRoleNameToKillerTeam.GetBool())
+        {
+            return;
+        }
+
+        foreach (var member in PlayerCatch.AllPlayerControls.Where(member => IsRoleNameRevealTeamMember(member, team)))
+        {
+            RoleNameSeerIds.Add(member.PlayerId);
+        }
+    }
+    private static bool IsRoleNameRevealTeamMember(PlayerControl player, TeamType team)
+    {
+        if (player == null || player.Data?.Disconnected == true)
+        {
+            return false;
+        }
+
+        return team switch
+        {
+            TeamType.Mad => player.Is(CustomRoleTypes.Impostor) || player.Is(CustomRoleTypes.Madmate) || player.Is(CustomRoles.WolfBoy),
+            TeamType.Crew => player.Is(CountTypes.Crew),
+            TeamType.Jackal => player.Is(CountTypes.Jackal) || player.Is(CustomRoles.Jackaldoll),
+            TeamType.Egoist => player.Is(CustomRoles.Egoist),
+            TeamType.CountKiller => player.Is(CustomRoles.CountKiller),
+            TeamType.Remotekiller => player.Is(CountTypes.Remotekiller),
+            TeamType.DoppelGanger => player.Is(CustomRoles.DoppelGanger),
+            TeamType.MilkyWay => player.Is(CountTypes.MilkyWay),
+            TeamType.Betrayer => player.Is(CustomRoles.MadBetrayer),
+            TeamType.Pavlov => player.Is(CountTypes.Pavlov),
+            TeamType.Opportunist => player.Is(CustomRoles.Opportunist),
+            _ => false,
+        };
+    }
+    private bool CanSeeRoleName(PlayerControl seer)
+    {
+        return Team != TeamType.None
+            && OptionShowRoleNameToKiller.GetBool()
+            && seer != null
+            && RoleNameSeerIds.Contains(seer.PlayerId);
+    }
+    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
+    {
+        if (CanSeeRoleName(seer))
+        {
+            enabled = true;
+            roleColor = DisplayRoleColor;
+            roleText = GetString(nameof(CustomRoles.SchrodingerCat));
+            addon = false;
+            return;
+        }
+
+        if (seer.IsAlive() is false && Team == TeamType.None)
+        {
+            roleText += $"{UtilsRoleText.GetRoleColorAndtext(CustomRoles.BakeCat)}";
+        }
     }
     /// <summary>
     /// キルしてきた人とオプションに応じて名前の色を開示する
@@ -287,6 +485,10 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         }
         return color.Value;
     }
+    public bool CanUseSabotageButton() => OptionCanUseSabotage.GetBool() && Team != TeamType.None;
+    public bool CanUseImpostorVentButton() => OptionCanVent.GetBool() && Team != TeamType.None;
+    public bool CanUseKillButton() => Team != TeamType.None && CanKill && HasKillbutton;
+    public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
     public override void CheckWinner(GameOverReason reason)
     {
         if (reason is GameOverReason.ImpostorsBySabotage && Team is TeamType.Mad

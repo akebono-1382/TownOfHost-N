@@ -33,7 +33,7 @@ namespace TownOfHost.Roles.Impostor
                         case SwitchTrigger.TriggerDouble:
                             return GetString("WhichdoubleclickDesc");
                         default:
-                            return string.Format(GetString("WitchDesc"), GetString($"{(trigger is SwitchTrigger.TriggerKill ? "Which_Kill" : (trigger is SwitchTrigger.OnPhantom ? "Which_Phantom" : "Which_Vent"))}"));
+                            return string.Format(GetString("WitchDesc"), GetString($"{((trigger is SwitchTrigger.OnPhantom ? "Which_Phantom" : "Which_Vent"))}"));
                     }
                 }
             );
@@ -62,7 +62,6 @@ namespace TownOfHost.Roles.Impostor
         }
         public enum SwitchTrigger
         {
-            TriggerKill,
             TriggerVent,
             TriggerDouble,
             OnPhantom,
@@ -133,9 +132,6 @@ namespace TownOfHost.Roles.Impostor
             bool needSwitch = false;
             switch (NowSwitchTrigger)
             {
-                case SwitchTrigger.TriggerKill:
-                    needSwitch = kill;
-                    break;
                 case SwitchTrigger.TriggerVent:
                     needSwitch = !kill;
                     break;

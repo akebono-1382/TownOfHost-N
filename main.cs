@@ -60,13 +60,13 @@ namespace TownOfHost
 
         public const string PluginGuid = "com.akebono.TownOfHost-N";
 
-        public const string BepInExPluginVersion = "1.1.0.1";
-        public const string PluginVersion = "1.1.0.1";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
-        public const string PluginShowVersion = "1.1.0.1";
-        public const string ModVersion = ".0.1";//リリースver用バージョン変更dc9b79
+        public const string BepInExPluginVersion = "1.1.1.0";
+        public const string PluginVersion = "1.1.1.0";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
+        public const string PluginShowVersion = "1.1.1.0";
+        public const string ModVersion = ".1.0";//リリースver用バージョン変更dc9b79
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
-        public static bool DebugVersion = false;
+        public static bool DebugVersion = true;
 
         // サポートされている最低のAmongUsバージョン(Readmeも変える)
         public static readonly string LowestSupportedVersion = "2026.3.31";
