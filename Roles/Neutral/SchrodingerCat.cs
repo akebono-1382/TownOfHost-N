@@ -112,9 +112,9 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             .SetValueFormat(OptionFormat.Seconds);
         OptionCountChenge = BooleanOptionItem.Create(RoleInfo, 15, OptionName.BakeCatCountChenge, false, false, OptionHasKillButton);
         OptionShowRoleNameToKiller = BooleanOptionItem.Create(RoleInfo, 16, OptionName.BakeCatShowRoleNameToKiller, true, false, OptionHasKillButton);
-        OptionDieKiller = BooleanOptionItem.Create(RoleInfo, 17, OptionName.BakeCatDieKiller, true, false);
-        OptionDieKillerTIme = FloatOptionItem.Create(RoleInfo, 18, OptionName.BakeCatDieKillerTime, new(0, 180, 1), 1, false, OptionDieKiller).SetValueFormat(OptionFormat.Seconds);
-        OptionShowRoleNameToKillerTeam = BooleanOptionItem.Create(RoleInfo, 19, OptionName.BakeCatShowRoleNameToKillerTeam, false, false, OptionShowRoleNameToKiller);
+        OptionShowRoleNameToKillerTeam = BooleanOptionItem.Create(RoleInfo, 17, OptionName.BakeCatShowRoleNameToKillerTeam, false, false, OptionShowRoleNameToKiller);
+        OptionDieKiller = BooleanOptionItem.Create(RoleInfo, 18, OptionName.BakeCatDieKiller, true, false);
+        OptionDieKillerTIme = FloatOptionItem.Create(RoleInfo, 19, OptionName.BakeCatDieKillerTime, new(0, 180, 1), 1, false, OptionDieKiller).SetValueFormat(OptionFormat.Seconds);
         OptionCanWinTheCrewmateBeforeChange = BooleanOptionItem.Create(RoleInfo, 20, OptionName.CanBeforeSchrodingerCatWinTheCrewmate, false, false);
         OptionChangeTeamWhenExile = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SchrodingerCatExiledTeamChanges, false, false);
         OptionCanSeeKillableTeammate = BooleanOptionItem.Create(RoleInfo, 22, OptionName.SchrodingerCatCanSeeKillableTeammate, false, false);
@@ -165,6 +165,10 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             {
                 KillerisCat = false;
             }
+            return false;
+        }
+        if (info.AttemptKiller.PlayerId == (Killer?.PlayerId ?? byte.MaxValue) && !KillerisCat)
+        {
             return false;
         }
         return true;
