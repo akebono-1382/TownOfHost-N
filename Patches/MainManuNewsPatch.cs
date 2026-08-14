@@ -51,9 +51,9 @@ public class ModNewsHistory
                 var news = new ModNews
                 {
                     Number = 100099,
-                    Title = "初リリース!",
-                    SubTitle = "<color=#6a5acd>●TOH-N v1.1.0</color>",
-                    ShortTitle = "<color=#6a5acd>●TOH-N v1.1.0</color>",
+                    Title = " ",
+                    SubTitle = "<color=#6a5acd>●TOH-N v1.1.0.1</color>",
+                    ShortTitle = "<color=#6a5acd>●TOH-N v1.1.0.1</color>",
                     Text = "\r\n"
                     ,
                     Date = "2026-8-5"

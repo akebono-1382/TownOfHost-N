@@ -380,7 +380,7 @@ namespace TownOfHost
                 //var text3 = "\n<size=70%><color=#ff0000>グローバルチャットでの下ネタ、暴言等は禁止です。発見次第TOH-N公式ディスコ鯖の方で報告願います。</color></size>";
                 //var text4 = "\n\n<size=110%><color=#ff0000>!!このmodは「Town Of Host-Pko」のプライベートフォークです!!\nTown Of Host-PkoやK、本家TOHではありません!!</color></size>";
                 var text5 = "";//"\n☆開発者から許可貰ってるって言ってる?　　\n<size=50%>→<#c9145a>個々で許可を出しておりません</color>!!大噓つきですよ!!</size>\n☆公開ルームに参加し、コード宣伝して「来てね～」って言うのは?\n<size=50%>→<#ff1919>勧誘/誘導</color>に当たるのでダメです。迷惑考えてくださいよ!!";
-                var text6 = "\n<size=60%><color=#7159A6>このMODはTOHK、TOHNをフォークしたMODでTOHK、TOHNとは別MODです。\n質問や不具合等が発生してもTOHNやTOHKやTOHには報告しないでください。</color></size>";
+                var text6 = "\n<size=60%><color=#7159A6>このMODはTOHPをフォークしたMODでTOHK、TOHPとは別MODです。\n質問や不具合等が発生してもTOHPやTOHKやTOHには報告しないでください。</color></size>";
                 Utils.SendMessage($"{text}{text2}{text5}{text6}", Sendto, $"<{Main.ModColor}>【This Room Use \"Town Of Host-N\"】</color>");
             }
             else

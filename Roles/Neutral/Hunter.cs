@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+/*using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using AmongUs.GameOptions;
@@ -362,4 +362,4 @@ namespace TownOfHost.Roles.Neutral
             achievements.Add(2, sp1);
         }
     }
-}
+}*/
