@@ -334,11 +334,11 @@ public sealed class JackalHadouHo : RoleBase, ILNKiller, IUsePhantomButton, ISel
     public void OnCheckMurderAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return;
-
+        (_, var target) = info.AttemptTuple;
         if (skMode && CanSideKick)
         {
             info.DoKill = false;
-            (_, var target) = info.AttemptTuple;
+
             DoSideKick(target);
 
             skMode = false;
@@ -349,7 +349,11 @@ public sealed class JackalHadouHo : RoleBase, ILNKiller, IUsePhantomButton, ISel
             UtilsNotifyRoles.NotifyRoles(OnlyMeName: true, SpecifySeer: Player);
             return;
         }
-
+        if (target.Is(CustomRoles.Tama))
+        {
+            info.DoKill = false;
+            return;
+        }
         nowcool = KillCooldown;
         LastCooltime = (int)nowcool;
         AfterKillPhantomReset();

@@ -696,6 +696,7 @@ namespace TownOfHost
                             CountTypes.GrimReaper => GetRoleColorAndtext(CustomRoles.GrimReaper),
                             CountTypes.Crew => GetRoleColorAndtext(CustomRoles.Crewmate),
                             CountTypes.Remotekiller => GetRoleColorAndtext(CustomRoles.Remotekiller),
+                            CountTypes.Pelican => GetRoleColorAndtext(CustomRoles.Pelican),
                             CountTypes.Fox => GetRoleColorAndtext(CustomRoles.Fox),
                             CountTypes.Hunter => GetRoleColorAndtext(CustomRoles.Hunter),
                             CountTypes.MilkyWay => Roles.Neutral.Vega.TeamText,

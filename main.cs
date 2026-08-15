@@ -60,9 +60,9 @@ namespace TownOfHost
 
         public const string PluginGuid = "com.akebono.TownOfHost-N";
 
-        public const string BepInExPluginVersion = "1.1.0.2";
-        public const string PluginVersion = "1.1.0.2";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
-        public const string PluginShowVersion = "1.1.0.2";
+        public const string BepInExPluginVersion = "3.1.0.2";
+        public const string PluginVersion = "3.1.0.2";//ほんとはx.y.z表記にしたかったけどx.y.z.km.ks表記だと警告だされる
+        public const string PluginShowVersion = "3.1.0.2";
         public const string ModVersion = ".0.2";//リリースver用バージョン変更dc9b79
 
         /// 配布するデバッグ版なのであればtrue。リリース時にはfalseにすること。
@@ -441,6 +441,7 @@ namespace TownOfHost
         Burnout,
         Surrender,
         assassination,
+        Swallowing,
         etc = -1,
     }
     //WinData
@@ -513,6 +514,7 @@ namespace TownOfHost
         Obolus = CustomRoles.Obolus,
         Mario = CustomRoles.Mario,
         Hunter = CustomRoles.Hunter,
+        Pelican = CustomRoles.Pelican,
 
         HASTroll = CustomRoles.HASTroll,
         TaskPlayerB = CustomRoles.TaskPlayerB,

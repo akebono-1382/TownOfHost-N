@@ -400,6 +400,7 @@ namespace TownOfHost
         Monika,
         StandMaster,
         Villain,
-        Hunter
+        Hunter,
+        Pelican
     }
 }

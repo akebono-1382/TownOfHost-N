@@ -1100,6 +1100,7 @@ public enum CustomRoles
     Obolus,
     Mario,
     Hunter,
+    Pelican,
     //DEBUG only Neutral.
     //HideAndSeek
     HASFox,

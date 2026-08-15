@@ -90,5 +90,7 @@ public interface ISchrodingerCatOwner
         /// ハンターに所属する状態
         /// </summary>
         Hunter,
+
+        Pelican,
     }
 }

@@ -296,6 +296,7 @@ class RoleInfoShower
                                         case CountTypes.GrimReaper: overrideRoleText = CustomRoles.GrimReaper; break;
                                         case CountTypes.Remotekiller: overrideRoleText = CustomRoles.Remotekiller; break;
                                         case CountTypes.Hunter: overrideRoleText = CustomRoles.Hunter; break;
+                                        case CountTypes.Pelican: overrideRoleText = CustomRoles.Pelican; break;
                                         case CountTypes.MilkyWay: countText = Roles.Neutral.Vega.TeamText; break;
                                         default: overrideRoleText = CustomRoles.Crewmate; break;
                                     }

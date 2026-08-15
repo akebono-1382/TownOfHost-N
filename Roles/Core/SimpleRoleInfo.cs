@@ -31,7 +31,8 @@ public enum From
     Speyrp,
     RevolutionaryHostRoles,
     Love_Couple_Mod,
-    UchuAddon
+    UchuAddon,
+    GooseGooseDuck
 }
 public class SimpleRoleInfo
 {

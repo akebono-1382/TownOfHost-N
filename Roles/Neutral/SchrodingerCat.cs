@@ -61,7 +61,6 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     PlayerControl Killer;
     byte KillerId = byte.MaxValue;
     readonly HashSet<byte> RoleNameSeerIds = [];
-    static bool KillerisCat;
     public TeamType SchrodingerCatChangeTo => Team;
     enum OptionName
     {
@@ -135,7 +134,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         if (info.AttemptKiller.PlayerId == Player.PlayerId) return;
 
         // 親分はキル出来ないようにする
-        if (info.AttemptTarget.PlayerId == (Killer?.PlayerId ?? byte.MaxValue) && !KillerisCat)
+        if (info.AttemptTarget.PlayerId == (Killer?.PlayerId ?? byte.MaxValue) )
         {
             info.DoKill = false;
         }
@@ -148,7 +147,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         if (info.IsSuicide) return true;
         if (!MagicalGirl.TryGetEffectiveRole<ISchrodingerCatOwner>(killer, out _)) return true;
 
-        if (killer.Is(CustomRoles.GrimReaper) || killer.Is(CustomRoles.BakeCat))
+        if (killer.Is(CustomRoles.GrimReaper) || killer.Is(CustomRoles.BakeCat) || killer.Is(CustomRoles.SchrodingerCat))
         {
             return true;
         }
@@ -157,17 +156,9 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         {
             info.CanKill = false;
             ChangeTeamOnKill(killer);
-            if (Killer.Is(CustomRoles.SchrodingerCat) || Killer.Is(CustomRoles.BakeCat))
-            {
-                KillerisCat = true;
-            }
-            else
-            {
-                KillerisCat = false;
-            }
             return false;
         }
-        if (info.AttemptKiller.PlayerId == (Killer?.PlayerId ?? byte.MaxValue) && !KillerisCat)
+        if (info.AttemptKiller.PlayerId == (Killer?.PlayerId ?? byte.MaxValue) )
         {
             return false;
         }
@@ -323,22 +314,6 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             && OptionShowRoleNameToKiller.GetBool()
             && seer != null
             && RoleNameSeerIds.Contains(seer.PlayerId);
-    }
-    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText, ref bool addon)
-    {
-        if (CanSeeRoleName(seer))
-        {
-            enabled = true;
-            roleColor = DisplayRoleColor;
-            roleText = GetString(nameof(CustomRoles.SchrodingerCat));
-            addon = false;
-            return;
-        }
-
-        if (seer.IsAlive() is false && Team == TeamType.None)
-        {
-            roleText += $"{UtilsRoleText.GetRoleColorAndtext(CustomRoles.BakeCat)}";
-        }
     }
     /// <summary>
     /// キルしてきた人とオプションに応じて名前の色を開示する
