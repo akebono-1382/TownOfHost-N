@@ -26,6 +26,7 @@ public sealed class Pirate : RoleBase, IKiller
             (6, 5),
             true,
             from: From.TownOfHost_Y,
+            countType: CountTypes.Pirate,
             assignInfo: new RoleAssignInfo(CustomRoles.Pirate, CustomRoleTypes.Neutral)
             {
                 AssignCountRule = new(1, 1, 1)
@@ -167,7 +168,6 @@ public sealed class Pirate : RoleBase, IKiller
 
         if (!isMadeGang)
         {
-            info.DoKill = false;
             if (!CanBeGang(target))
             {
                 killer.RpcProtectedMurderPlayer(target);
@@ -175,6 +175,10 @@ public sealed class Pirate : RoleBase, IKiller
             }
             CreateGang(target);
             return;
+        }
+        if (target.Is(CustomRoleTypes.Impostor))
+        {
+            info.DoKill = false;
         }
 
         killer.ResetKillCooldown();

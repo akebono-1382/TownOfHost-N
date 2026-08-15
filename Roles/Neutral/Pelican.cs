@@ -72,10 +72,12 @@ namespace TownOfHost.Roles.Neutral
         }
         public void OnCheckMurderAsKiller(MurderInfo info)
         {
-            info.DoKill = false;
-            (var killer, var target) = info.AttemptTuple;
-
-            // 修正：ターゲットの現在の位置（元の位置）を取得して保持する
+             (var killer, var target) = info.AttemptTuple;
+            if (target.Is(CustomRoles.Bait) || target.Is(CustomRoles.MadBait))
+            {
+                info.DoKill = true;
+                return;
+            }
             var originalPosition = (Vector2)Player.transform.position;
             var hidePosition = new Vector2(-100f, -100f);
             target.RpcSnapToForced(hidePosition);
@@ -83,15 +85,14 @@ namespace TownOfHost.Roles.Neutral
             if (!GrimPlayers.ContainsKey(target.PlayerId))
             {
                 killer.SetKillCooldown(delay: true);
-                // 修正：タイマー(999f)と元の座標を一緒に追加
                 GrimPlayers.Add(target.PlayerId, (999f, originalPosition));
-                RpcAddList(target.PlayerId, originalPosition); // RPC引数も拡張
+                RpcAddList(target.PlayerId, originalPosition);
             }
             UtilsNotifyRoles.NotifyRoles(SpecifySeer: [Player]);
+            info.DoKill = false;
             return;
         }
 
-        // 目的の処理：ペリカンが死んだ（襲われた）時に全員を元の位置に戻す
         public override bool OnCheckMurderAsTarget(MurderInfo info)
         {
             foreach (var (targetId, data) in GrimPlayers)
@@ -100,13 +101,12 @@ namespace TownOfHost.Roles.Neutral
                 if (target != null)
                 {
                     var originalPosition = (Vector2)Player.transform.position;
-                    // 保持していた元の位置にプレイヤーを強制移動させる
                     target.RpcSnapToForced(data.originalPos);
                 }
             }
-            GrimPlayers.Clear(); // お腹の中をクリア
+            GrimPlayers.Clear(); 
 
-            return true; // 通常通り自分がキルされる処理を続行
+            return true; 
         }
 
         public override void OnReportDeadBody(PlayerControl repo, NetworkedPlayerInfo __)
@@ -136,7 +136,6 @@ namespace TownOfHost.Roles.Neutral
                 }
                 else
                 {
-                    // 修正：Dictionaryの構造変更に伴うタイマーの減算
                     GrimPlayers[targetId] = (data.timer - Time.fixedDeltaTime, data.originalPos);
                 }
             }

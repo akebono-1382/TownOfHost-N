@@ -269,6 +269,7 @@ namespace TownOfHost
             int PavlovOwnerAlive = 0;
             int PavlovOwnerRemaining = 0;
             int Pelican = 0;
+            int Pirate = 0;
 
             foreach (var pc in PlayerCatch.AllAlivePlayerControls)
             {
@@ -302,6 +303,7 @@ namespace TownOfHost
                         break;
                     case CountTypes.Eater: EaterCount++; break;
                     case CountTypes.Pelican: Pelican++; break;
+                    case CountTypes.Pirate: Pirate++; Crew++; FoxAndCrew++; break;
                 }
             }
 
@@ -467,6 +469,14 @@ namespace TownOfHost
                 reason = GameOverReason.ImpostorsByKill;
                 CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Pelican, byte.MaxValue);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pelican);
+            }
+            else if (Jackal == 0 && Remotekiller == 0 && MadBetrayer == 0
+                && MilkyWay == 0 && Pavlov == 0 && StandMasterCount == 0 && Imp == 0
+                && Hunter == 0 && EaterCount == 0 && Pelican == 0 && FoxAndCrew - 1 <= Pirate) //海賊がクルーカウントなので海賊分の1を引く
+            {
+                reason = GameOverReason.ImpostorsByKill;
+                CustomWinnerHolder.ResetAndSetAndChWinner(CustomWinner.Pirate, byte.MaxValue);
+                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pirate);
             }
             else if (Jackal == 0 && Remotekiller == 0 && MadBetrayer == 0
                 && MilkyWay == 0 && Pavlov == 0 && StandMasterCount == 0 && Imp == 0

@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using HarmonyLib;
 using TownOfHost.Roles.Core;
 using TownOfHost.Roles.Core.Interfaces;
 using UnityEngine;
@@ -117,13 +118,6 @@ public sealed class Spelunker : RoleBase, ISystemTypeUpdateHook
     {
         if (!TryGetActiveRole(player, out var spelunker)) return false;
         spelunker.TryLadderFallDeath();
-        return true;
-    }
-
-    public static bool OnZiplineUsed(PlayerControl player, bool fromTop)
-    {
-        if (!TryGetActiveRole(player, out var spelunker)) return false;
-        spelunker.TryZiplineFallDeath(fromTop);
         return true;
     }
 

@@ -401,6 +401,7 @@ namespace TownOfHost
         StandMaster,
         Villain,
         Hunter,
-        Pelican
+        Pelican,
+        Pirate
     }
 }
